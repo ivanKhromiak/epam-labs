@@ -6,7 +6,7 @@
     using Epam.HomeWork.Lab1.Task1;
     using Epam.HomeWork.Lab1.Task2;
 
-    public class Lab1Runner : IConsoleLabRunner, ILabRunner
+    public class Lab1Runner : IConsoleLabRunner
     {
         public Lab1Runner()
         {
