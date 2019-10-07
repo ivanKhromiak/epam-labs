@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\HomeWork.Common\HomeWork.Common.csproj" />
+    <ProjectReference Include="..\Lab1Runner\Lab1Runner.csproj" />
+  </ItemGroup>
+
+</Project>
