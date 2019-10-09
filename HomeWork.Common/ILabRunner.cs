@@ -8,6 +8,6 @@ namespace Epam.HomeWork.Common
 
         IList<string> Errors { get; }
 
-        bool Succes { get; }
+        bool Success { get; }
     }
 }
