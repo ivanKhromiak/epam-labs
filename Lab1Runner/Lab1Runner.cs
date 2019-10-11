@@ -26,9 +26,6 @@
             Succes = true;
             RunTask1();
             RunTask2();
-
-            Console.WriteLine("Press any key to continue...");
-            Console.ReadKey();
         }
 
         private void RunTask1()
