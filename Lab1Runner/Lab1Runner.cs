@@ -10,11 +10,11 @@
     {
         public Lab1Runner()
         {
-            Succes = false;
+            Success = false;
             Errors = new List<string>();
         }
 
-        public bool Succes { get; private set; }
+        public bool Success { get; private set; }
 
         public IList<string> Errors { get; }
 
@@ -23,7 +23,7 @@
 
         public void RunConsoleLab()
         {
-            Succes = true;
+            Success = true;
             RunTask1();
             RunTask2();
 
@@ -64,7 +64,7 @@
             catch (Exception e)
             {
                 Errors.Add($"RunPersonTask() error: {e.Message}");
-                Succes = false;
+                Success = false;
             }
         }
 
@@ -101,7 +101,7 @@
             catch (Exception e)
             {
                 Errors.Add($"RunRectangleTask() error: {e.Message}");
-                Succes = false;
+                Success = false;
             }
         }
 
@@ -141,7 +141,7 @@
             catch (Exception e)
             {
                 Errors.Add($"RunMonthsTask() error: {e.Message}");
-                Succes = false;
+                Success = false;
             }
         }
 

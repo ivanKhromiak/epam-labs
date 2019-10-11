@@ -9,11 +9,11 @@
     {
         public Lab2Runner()
         {
-            Succes = false;
+            Success = false;
             Errors = new List<string>();
         }
 
-        public bool Succes { get; private set; }
+        public bool Success { get; private set; }
 
         public IList<string> Errors { get; }
 
@@ -22,7 +22,7 @@
 
         public void RunConsoleLab()
         {
-            Succes = true;
+            Success = true;
             RunTask1();
             RunTask2();
             RunTask3();
@@ -71,7 +71,7 @@
             }
             catch (Exception e)
             {
-                Succes = false;
+                Success = false;
                 Errors.Add("Lab2.Task2: IndexOutOfRange not thrown");
                 Console.WriteLine('\t' + e.Message);
             }
@@ -109,7 +109,7 @@
             }
             catch (Exception e)
             {
-                Succes = false;
+                Success = false;
                 Errors.Add("\tLab2.Task3: ArgumentException not thrown");
                 Console.WriteLine('\t' + e.Message);
             }
