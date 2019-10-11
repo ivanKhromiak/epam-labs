@@ -18,7 +18,7 @@
                 runner.RunConsoleLab();
 
                 Console.WriteLine();
-                if(!runner.Succes)
+                if(!runner.Success)
                 {
                     foreach(var error in runner.Errors)
                     {
