@@ -97,15 +97,14 @@
                 Exceptions.DoSomeMath(a, b);
             }
             catch (ArgumentException e)
+            when (e.ParamName == "a")
             {
-                if (e.ParamName == "a")
-                {
-                    Console.WriteLine('\t' + e.Message);
-                }
-                else if (e.ParamName == "b")
-                {
-                    Console.WriteLine('\t' + e.Message);
-                }
+                Console.WriteLine('\t' + e.Message);
+            }
+            catch (ArgumentException e)
+            when (e.ParamName == "b")
+            {
+                Console.WriteLine('\t' + e.Message);
             }
             catch (Exception e)
             {
