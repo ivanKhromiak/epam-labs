@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using Epam.HomeWork.Lab1Runner;
+    using Epam.HomeWork.Lab2Runner;
     using Epam.HomeWork.Common;
 
     public static class Program
@@ -24,15 +25,14 @@
                         ConsoleHelper.WriteHeaderMessage(error, ConsoleColor.Yellow, ConsoleColor.Black);
                     }
                 }
+                Console.Clear();
             }
-
-            Console.WriteLine("Press any key to continue...");
-            Console.ReadKey();
         }
 
         private static IEnumerable<IConsoleLabRunner> GetLabRunners()
         {
             yield return new Lab1Runner();
+            yield return new Lab2Runner();
         }
     }
 }

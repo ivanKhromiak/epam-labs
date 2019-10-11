@@ -8,6 +8,7 @@
   <ItemGroup>
     <ProjectReference Include="..\HomeWork.Common\HomeWork.Common.csproj" />
     <ProjectReference Include="..\Lab1Runner\Lab1Runner.csproj" />
+    <ProjectReference Include="..\Lab2Runner\Lab2Runner.csproj" />
   </ItemGroup>
 
 </Project>
