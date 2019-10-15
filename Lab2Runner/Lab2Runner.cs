@@ -72,8 +72,8 @@
             catch (Exception e)
             {
                 Success = false;
+                Errors.Add(e.Message);
                 Errors.Add("Lab2.Task2: IndexOutOfRange not thrown");
-                Console.WriteLine('\t' + e.Message);
             }
         }
 
@@ -109,8 +109,8 @@
             catch (Exception e)
             {
                 Success = false;
+                Errors.Add(e.Message);
                 Errors.Add("\tLab2.Task3: ArgumentException not thrown");
-                Console.WriteLine('\t' + e.Message);
             }
         }
     }
