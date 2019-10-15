@@ -35,8 +35,8 @@
         {
             ConsoleHelper.WriteHeaderMessage(
                 "Task 1: StackOverFlow Exception...\n",
-                ConsoleColor.Yellow,
-                ConsoleColor.Black);
+                ConsoleColor.Red,
+                Console.BackgroundColor);
             try
             {
                 Console.WriteLine("Do you want to generate StackOverFlow Exception? (y/n)");
@@ -59,8 +59,8 @@
         {
             ConsoleHelper.WriteHeaderMessage(
                 "Task 2: IndexOutOfRange Exception...\n",
-                ConsoleColor.Yellow,
-                ConsoleColor.Black);
+                ConsoleColor.Red,
+                Console.BackgroundColor);
             try
             {
                 Exceptions.GenerateIndexOutOfRangeException();
@@ -81,8 +81,8 @@
         {
             ConsoleHelper.WriteHeaderMessage(
                 "Task 3: Argument Exception...\n",
-                ConsoleColor.Yellow,
-                ConsoleColor.Black);
+                ConsoleColor.Red,
+                Console.BackgroundColor);
 
             try
             {
