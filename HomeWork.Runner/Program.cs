@@ -5,21 +5,19 @@
     using Epam.HomeWork.Lab1Runner;
     using Epam.HomeWork.Lab2Runner;
     using Epam.HomeWork.Lab3Runner;
+    using Epam.HomeWork.Lab4Runner;
     using Epam.HomeWork.Common;
     using NLog;
 
     public static class Program
     {
         public static void Main()
-        {
-            var logger = LogManager.GetCurrentClassLogger();
+        { 
+            Logger logger = LogManager.GetCurrentClassLogger();
 
             try
             {               
                 RunLabs(logger);
-
-                Console.WriteLine("Press any key to continue...");
-                Console.ReadKey();
             }
             catch (Exception ex)
             {
@@ -46,7 +44,7 @@
                 {
                     foreach (var error in runner.Errors)
                     {
-                        Console.WriteLine(error);
+                        Console.WriteLine($"Error: {error}");
                         logger.Error(error);
                     }
                 }
@@ -58,6 +56,7 @@
             yield return new Lab1Runner();
             yield return new Lab2Runner();
             yield return new Lab3Runner();
+            yield return new Lab4Runner();
         }
     }
 }
