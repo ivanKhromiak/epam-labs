@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\HomeWork.Common\HomeWork.Common.csproj" />
+    <ProjectReference Include="..\Lab4\Lab4.csproj" />
+  </ItemGroup>
+
+</Project>
