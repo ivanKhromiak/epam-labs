@@ -83,6 +83,8 @@
             string filename = "Lab2";
             string directoryName = @"E:\Epam";
 
+            Console.WriteLine($"Searching for file like *{filename}*.{ext} in {directoryName}");
+
             try
             {
                 var files = FileFinder.FindByPartialNameAndExtension(ext, filename, directoryName);
