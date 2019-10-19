@@ -23,9 +23,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lab4", "Lab4\Lab4.csproj", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lab4Runner", "Lab4Runner\Lab4Runner.csproj", "{BDC3AFF1-3252-409F-89E7-5AA57CC32571}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "HomeWrok.Labs", "HomeWrok.Labs", "{C1F5A8AB-372F-4A5A-A581-1FE531F096E9}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "HomeWork.Labs", "HomeWork.Labs", "{C1F5A8AB-372F-4A5A-A581-1FE531F096E9}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "HomeWork.LabRunners", "HomeWork.LabRunners", "{5C88F7F1-54EF-48F7-8A2D-39DE7382654F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CustomLogger", "CustomLogger\CustomLogger.csproj", "{9270A10F-1EC7-4735-A970-90F5D6A13F77}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -73,6 +75,10 @@ Global
 		{BDC3AFF1-3252-409F-89E7-5AA57CC32571}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BDC3AFF1-3252-409F-89E7-5AA57CC32571}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BDC3AFF1-3252-409F-89E7-5AA57CC32571}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9270A10F-1EC7-4735-A970-90F5D6A13F77}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9270A10F-1EC7-4735-A970-90F5D6A13F77}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9270A10F-1EC7-4735-A970-90F5D6A13F77}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9270A10F-1EC7-4735-A970-90F5D6A13F77}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
