@@ -7,13 +7,24 @@
     using Epam.HomeWork.Lab3Runner;
     using Epam.HomeWork.Lab4Runner;
     using Epam.HomeWork.Common;
-    using NLog;
+    using CustomLogger;
+    using System.IO;
+
+    //using NLog;
 
     public static class Program
     {
+        private const string LoggerName = "LabRunnerLogger";
+
         public static void Main()
-        { 
-            Logger logger = LogManager.GetCurrentClassLogger();
+        {
+            var config = new LoggingConfiguration();
+
+            string path = Directory.GetCurrentDirectory() + @"\log.txt";
+            config.AddFileTarget(path);
+
+            LogManager.Configuration = config;
+            Logger logger = LogManager.GetLogger(LoggerName);
 
             try
             {               
@@ -21,7 +32,7 @@
             }
             catch (Exception ex)
             {
-                logger.Error(ex, "Stopped program because of exception");
+                logger.Error("Stopped program because of exception", ex);
                 throw;
             }
             finally
@@ -45,7 +56,7 @@
                     foreach (var error in runner.Errors)
                     {
                         Console.WriteLine($"Error: {error}");
-                        logger.Error(error);
+                        logger.LogMessage(error, LogLevel.Error);
                     }
                 }
             }
