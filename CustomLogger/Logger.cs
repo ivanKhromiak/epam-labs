@@ -58,7 +58,8 @@
 
         public void Trace(string message, Exception exception)
         {
-            throw new NotImplementedException();
+            Log($"{GetTimeStamp()}: {message}\n" +
+                $"Exception: {GetInfoFromException(exception, LogLevel.Trace)}");
         }
 
         public void Warn(string message, Exception exception)
