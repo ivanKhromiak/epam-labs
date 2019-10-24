@@ -29,6 +29,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "HomeWork.LabRunners", "Home
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CustomLogger", "CustomLogger\CustomLogger.csproj", "{9270A10F-1EC7-4735-A970-90F5D6A13F77}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lab5", "Lab5\Lab5.csproj", "{5E522580-770C-4862-B9FE-19B4EBAC2899}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -79,6 +81,10 @@ Global
 		{9270A10F-1EC7-4735-A970-90F5D6A13F77}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9270A10F-1EC7-4735-A970-90F5D6A13F77}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9270A10F-1EC7-4735-A970-90F5D6A13F77}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5E522580-770C-4862-B9FE-19B4EBAC2899}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E522580-770C-4862-B9FE-19B4EBAC2899}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E522580-770C-4862-B9FE-19B4EBAC2899}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E522580-770C-4862-B9FE-19B4EBAC2899}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -92,6 +98,7 @@ Global
 		{55A94F6B-1461-4EBA-A4DA-4EB98D5ACE7D} = {5C88F7F1-54EF-48F7-8A2D-39DE7382654F}
 		{F9BBC92E-C815-4FBE-AA67-74825C41B028} = {C1F5A8AB-372F-4A5A-A581-1FE531F096E9}
 		{BDC3AFF1-3252-409F-89E7-5AA57CC32571} = {5C88F7F1-54EF-48F7-8A2D-39DE7382654F}
+		{5E522580-770C-4862-B9FE-19B4EBAC2899} = {C1F5A8AB-372F-4A5A-A581-1FE531F096E9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {767554A8-87FB-44E1-9C62-297C58E47842}
