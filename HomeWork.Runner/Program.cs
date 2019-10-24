@@ -2,16 +2,9 @@
 {
     using System;
     using System.Collections.Generic;
-    using Epam.HomeWork.Lab1Runner;
-    using Epam.HomeWork.Lab2Runner;
-    using Epam.HomeWork.Lab3Runner;
-    using Epam.HomeWork.Lab4Runner;
-    using Epam.HomeWork.Lab5Runner;
     using Epam.HomeWork.Common;
     using CustomLogger;
     using System.IO;
-    using System.Linq;
-
     //using NLog;
 
     public static class Program
