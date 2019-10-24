@@ -8,10 +8,15 @@
 
     public class Lab4Runner : IConsoleLabRunner
     {
+        public Lab4Runner()
+        {
+            Errors = new List<string>();
+            Success = false;
+        }
+
         public string Description => "Serialization";
 
-        public IList<string> Errors 
-            => new List<string>();
+        public IList<string> Errors { get; }
 
         public bool Success { get; set; }
 
