@@ -6,9 +6,11 @@
     using Epam.HomeWork.Lab2Runner;
     using Epam.HomeWork.Lab3Runner;
     using Epam.HomeWork.Lab4Runner;
+    using Epam.HomeWork.Lab5Runner;
     using Epam.HomeWork.Common;
     using CustomLogger;
     using System.IO;
+    using System.Linq;
 
     //using NLog;
 
@@ -66,10 +68,7 @@
 
         private static IEnumerable<IConsoleLabRunner> GetLabRunners()
         {
-            yield return new Lab1Runner();
-            yield return new Lab2Runner();
-            yield return new Lab3Runner();
-            yield return new Lab4Runner();
+            return ReflectionScanner.Scan<IConsoleLabRunner>();
         }
     }
 }
