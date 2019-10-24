@@ -18,11 +18,13 @@
         public void WriteMessage(string message)
         {
             _loggingStream.Write(new UTF8Encoding(true).GetBytes(message));
+            _loggingStream.Flush();
         }
 
         public async Task WriteMessageAsync(string message)
         {
             await _loggingStream.WriteAsync(new UTF8Encoding(true).GetBytes(message));
+            await _loggingStream.FlushAsync();
         }
 
         public void Flush()
@@ -39,6 +41,7 @@
             {
                 if (disposing)
                 {
+                    _loggingStream.Flush();
                     _loggingStream.Dispose();
                 }
                 disposedValue = true;
