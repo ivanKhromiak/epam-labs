@@ -16,27 +16,29 @@
     {
         private const string LoggerName = "LabRunnerLogger";
 
+        public static string Path { get; } = Directory.GetCurrentDirectory() + @"\log.txt";
+
         public static void Main()
         {
             var config = new LoggingConfiguration();
 
-            string path = Directory.GetCurrentDirectory() + @"\log.txt";
-            config.AddFileTarget(path);
+            config.AddFileTarget(Path)
+                  .AddConsoleTarget();
 
             LogManager.Configuration = config;
             Logger logger = LogManager.GetLogger(LoggerName);
 
             try
-            {               
+            {
                 RunLabs(logger);
             }
             catch (Exception ex)
             {
-                logger.Error("Stopped program because of exception", ex);
+                logger.Trace("Stopped program because of exception", ex);
                 throw;
             }
             finally
-            { 
+            {
                 LogManager.Shutdown();
             }
         }
