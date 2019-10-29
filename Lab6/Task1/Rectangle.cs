@@ -48,15 +48,15 @@ namespace Epam.HomeWork.Lab6.Task1
             this.BottomLeft = bottomLeft.Clone() as PointF;
 
             this.BottomRight = new PointF(
-                this.BottomLeft.X + this.Width, 
+                this.BottomLeft.X + this.Width,
                 this.BottomLeft.Y);
 
             this.TopLeft = new PointF(
-                this.BottomLeft.X, 
+                this.BottomLeft.X,
                 this.BottomLeft.Y + this.Height);
 
             this.TopRight = new PointF(
-                this.BottomLeft.X + this.Width, 
+                this.BottomLeft.X + this.Width,
                 this.BottomLeft.Y + this.Height);
         }
 
@@ -190,14 +190,26 @@ namespace Epam.HomeWork.Lab6.Task1
         /// <returns><see cref="Rectangle" /></returns>
         public Rectangle Intersect(Rectangle other)
         {
+            // two rectangles do not overlap
+            if (this.BottomLeft.X > other.BottomRight.X
+                || other.BottomLeft.X > this.BottomRight.X)
+            {
+                return null;
+            }
+            if (this.BottomLeft.Y > other.TopLeft.Y
+                || other.BottomLeft.Y > this.TopLeft.Y)
+            {
+                return null;
+            }
+
             float leftX = MathF.Max(this.BottomLeft.X, other.BottomLeft.X);
             float rightX = MathF.Min(this.BottomRight.X, other.BottomRight.X);
             float bottomY = MathF.Max(this.BottomLeft.Y, other.BottomLeft.Y);
             float topY = MathF.Min(this.TopLeft.Y, other.TopLeft.Y);
 
             return new Rectangle(
-                rightX - leftX, 
-                topY - bottomY, 
+                rightX - leftX,
+                topY - bottomY,
                 new PointF(leftX, bottomY));
         }
 
