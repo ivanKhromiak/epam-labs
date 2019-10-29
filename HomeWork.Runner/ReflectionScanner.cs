@@ -8,18 +8,17 @@
 
     public class ReflectionScanner
     {
-
         public static string DirPath = AppDomain.CurrentDomain.BaseDirectory;
 
-        public static string[] ScanLibs()
+        public static string[] ScanLibs(SearchOption option)
         {
-            return Directory.GetFiles(DirPath, "*.dll");
+            return Directory.GetFiles(DirPath, "*.dll", option);
         }
 
-        public static List<T> Scan<T>()
+        public static List<T> Scan<T>(SearchOption option)
         {
             var result = new List<T>();
-            var filePaths = ScanLibs();
+            var filePaths = ScanLibs(option);
 
             foreach (var filePath in filePaths)
             {
@@ -34,8 +33,7 @@
 
                 foreach (var item in typeslist)
                 {
-                    var type = typeslist.First();
-                    var newInstance = (T)a.CreateInstance(type.ToString());
+                    var newInstance = (T)a.CreateInstance(item.ToString());
 
                     if (newInstance == null)
                         throw new Exception($"Could not initialize instance in dll: {filePath}");
