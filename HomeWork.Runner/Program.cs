@@ -6,8 +6,6 @@
     using CustomLogger;
     using System.IO;
 
-    //using NLog;
-
     public static class Program
     {
         private const string LoggerName = "LabRunnerLogger";
@@ -67,7 +65,7 @@
 
         private static IEnumerable<IConsoleLabRunner> GetLabRunners()
         {
-            return ReflectionScanner.Scan<IConsoleLabRunner>();
+            return ReflectionScanner.Scan<IConsoleLabRunner>(SearchOption.AllDirectories);
         }
     }
 }

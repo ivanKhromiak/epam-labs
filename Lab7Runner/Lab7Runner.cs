@@ -16,7 +16,6 @@
             Errors = new List<string>();
             Success = false;
             var builder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
 
             configuration = builder.Build();
