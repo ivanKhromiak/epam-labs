@@ -5,6 +5,7 @@
     using Epam.HomeWork.Common;
     using CustomLogger;
     using System.IO;
+
     //using NLog;
 
     public static class Program
@@ -14,6 +15,11 @@
         public static string Path { get; } = Directory.GetCurrentDirectory() + @"\log.txt";
 
         public static void Main()
+        {
+            Run();
+        }
+
+        private static void Run()
         {
             var config = new LoggingConfiguration();
 
