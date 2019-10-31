@@ -6,9 +6,11 @@ namespace Epam.HomeWork.Lab7Runner
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.IO;
     using Epam.HomeWork.Common;
     using Epam.HomeWork.Lab7;
+    using Epam.HomeWork.LabRunners.Common;
     using Microsoft.Extensions.Configuration;
 
     /// <summary>
@@ -24,7 +26,7 @@ namespace Epam.HomeWork.Lab7Runner
         /// <summary>
         /// Stats writer
         /// </summary>
-        private IFilesStatisticWriter writer;
+        private IStatisticWriter<string> writer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Lab7Runner" /> class.
@@ -62,7 +64,7 @@ namespace Epam.HomeWork.Lab7Runner
         public void RunConsoleLab()
         {
             this.Success = true;
-     
+
             try
             {
                 this.GetDirectoriesNames(out string firstDirName, out string secondDirName);
@@ -72,6 +74,20 @@ namespace Epam.HomeWork.Lab7Runner
 
                 this.RunDuplicateFilesTask(firstDir, secondDir, this.writer);
                 this.RunUniqueFilesTask(firstDir, secondDir, this.writer);
+
+                this.GetExcelConfigData(
+                    out string firstColName,
+                    out string secondColName,
+                    out string filename,
+                    out int firstColStartRange,
+                    out int secondColStartRange);
+
+                this.RunExcelColumnComparerTask(
+                    firstColName,
+                    secondColName,
+                    filename,
+                    firstColStartRange,
+                    secondColStartRange);
             }
             catch (ArgumentException e)
             {
@@ -85,28 +101,7 @@ namespace Epam.HomeWork.Lab7Runner
             }
         }
 
-        /// <summary>
-        /// Gets directories names from configuration
-        /// </summary>
-        /// <param name="firstDirName">First directory name</param>
-        /// <param name="secondDirName">Second directory name</param>
-        private void GetDirectoriesNames(out string firstDirName, out string secondDirName)
-        {
-            firstDirName = this.configuration["FirstDirectoryName"];
-            secondDirName = this.configuration["SecondDirectoryName"];
-
-            if (string.IsNullOrWhiteSpace(firstDirName) || !Directory.Exists(firstDirName))
-            {
-                throw new LabConfigurationException("Lab7Runner: FirstDirectoryName is not " +
-                    "specified or directory does not exist!");
-            }
-
-            if (string.IsNullOrWhiteSpace(secondDirName) || !Directory.Exists(secondDirName))
-            {
-                throw new LabConfigurationException("Lab7Runner: SecondDirectoryName is not " +
-                    "specified or directory does not exist!");
-            }
-        }
+        #region Tasks
 
         /// <summary>
         /// Runs Duplicate Files Task
@@ -117,7 +112,7 @@ namespace Epam.HomeWork.Lab7Runner
         private void RunDuplicateFilesTask(
             DirectoryInfo firstDir,
             DirectoryInfo secondDir,
-            IFilesStatisticWriter writer)
+            IStatisticWriter<string> writer)
         {
             if (firstDir == null)
             {
@@ -139,14 +134,31 @@ namespace Epam.HomeWork.Lab7Runner
                 ConsoleColor.Yellow,
                 ConsoleColor.Black);
 
+            var watch = new Stopwatch();
+
+            watch.Start();
             var duplicateFiles = DirectoryComparer.GetDuplicateFiles(firstDir, secondDir);
+            watch.Stop();
 
-            writer.WriteFilenameData(
-                duplicateFiles, 
-                "Duplicate files", 
-                new List<DirectoryInfo> { firstDir, secondDir });
+            var fileStatInfo = new StatisticInfo<string>
+            {
+                Name = "Duplicate files",
+                Data = duplicateFiles,
+                DataItemName = "Filename"
+            };
 
-            Console.WriteLine("Duplicate files task ended.");
+            var directoryStatsInfo = new StatisticInfo<string>
+            {
+                Name = "Directories involved",
+                Data = new[] { firstDir.FullName, secondDir.FullName },
+                DataItemName = "Directory"
+            };
+
+            writer.WriteData(
+                new[] { directoryStatsInfo, fileStatInfo },
+                "Duplicate Files");
+
+            Console.WriteLine($"Duplicate files task finished. Elapsed time: {watch.ElapsedMilliseconds} ms.\n");
         }
 
         /// <summary>
@@ -158,7 +170,7 @@ namespace Epam.HomeWork.Lab7Runner
         private void RunUniqueFilesTask(
             DirectoryInfo firstDir,
             DirectoryInfo secondDir,
-            IFilesStatisticWriter writer)
+            IStatisticWriter<string> writer)
         {
             if (firstDir == null)
             {
@@ -180,14 +192,159 @@ namespace Epam.HomeWork.Lab7Runner
                 ConsoleColor.Yellow,
                 ConsoleColor.Black);
 
+            var watch = new Stopwatch();
+
+            watch.Start();
             var uniqueFiles = DirectoryComparer.GetUniqueFiles(firstDir, secondDir);
+            watch.Stop();
 
-            writer.WriteFilenameData(
-                uniqueFiles,
-                "Unique files",
-                new List<DirectoryInfo> { firstDir, secondDir });
+            var fileStatInfo = new StatisticInfo<string>
+            {
+                Name = "Unique files",
+                Data = uniqueFiles,
+                DataItemName = "Filename"
+            };
 
-            Console.WriteLine("Unique files task ended.");
+            var directoryStatsInfo = new StatisticInfo<string>
+            {
+                Name = "Directories involved",
+                Data = new[] { firstDir.FullName, secondDir.FullName },
+                DataItemName = "Directory"
+            };
+
+            writer.WriteData(
+                new[] { directoryStatsInfo, fileStatInfo },
+                "Unique Files");
+
+            Console.WriteLine($"Unique files task finished. Elapsed time: {watch.ElapsedMilliseconds} ms.\n");
+        }
+
+        /// <summary>
+        /// Runs an Excel Column Comparer Task
+        /// </summary>
+        /// <param name="firstCol">Name of first column</param>
+        /// <param name="secondCol">Name of second column</param>
+        /// <param name="filename">Name of input file</param>
+        /// <param name="firstColStartRange">First column start range</param>
+        /// <param name="secondColStartRange">Second column start range</param>
+        private void RunExcelColumnComparerTask(
+            string firstCol,
+            string secondCol,
+            string filename,
+            int firstColStartRange,
+            int secondColStartRange)
+        {
+            ConsoleHelper.WriteHeaderMessage(
+                "Task 3: Info about unique elements in two excel columns...\n",
+                ConsoleColor.Yellow,
+                ConsoleColor.Black);
+
+            IExcelColumnReader reader = new SyncfusionExcelColumnReader();
+            var watch = new Stopwatch();
+
+            watch.Start();
+
+            var firstRange = reader.GetData(firstCol, firstColStartRange, filename);
+            var secondRange = reader.GetData(secondCol, secondColStartRange, filename);
+
+            var uniqueElements = EnumerableComparer<string>.GetUnique(firstRange, secondRange);
+
+            var elementsStats = new StatisticInfo<string>
+            {
+                Name = "Unique excel column elements",
+                Data = uniqueElements,
+                DataItemName = "Element"
+            };
+
+            var colsStats = new StatisticInfo<string>
+            {
+                Name = $"Columns of {filename}",
+                Data = new[] { firstCol, secondCol },
+                DataItemName = "Column"
+            };
+
+            this.writer.WriteData(new[] { colsStats, elementsStats }, "Unique Elements");
+
+            watch.Stop();
+
+            Console.WriteLine($"Unique excel elements task finished. Elapsed time: {watch.ElapsedMilliseconds} ms.\n");
+        }
+
+        #endregion
+
+        #region Helper Methods
+
+        /// <summary>
+        /// Gets directories names from configuration
+        /// </summary>
+        /// <param name="firstDirName">First directory name</param>
+        /// <param name="secondDirName">Second directory name</param>
+        private void GetDirectoriesNames(out string firstDirName, out string secondDirName)
+        {
+            firstDirName = this.configuration["Lab7.FirstDirectoryName"];
+            secondDirName = this.configuration["Lab7.SecondDirectoryName"];
+
+            if (string.IsNullOrWhiteSpace(firstDirName) || !Directory.Exists(firstDirName))
+            {
+                throw new LabConfigurationException("Lab7Runner: FirstDirectoryName is not " +
+                    "specified or directory does not exist!");
+            }
+
+            if (string.IsNullOrWhiteSpace(secondDirName) || !Directory.Exists(secondDirName))
+            {
+                throw new LabConfigurationException("Lab7Runner: SecondDirectoryName is not " +
+                    "specified or directory does not exist!");
+            }
+        }
+
+        /// <summary>
+        /// Gets data from config
+        /// </summary>
+        /// <param name="firstColName">Name of first column</param>
+        /// <param name="secondColName">Name of second column</param>
+        /// <param name="filename">Name of input file</param>
+        /// <param name="firstColStartRange">First column start range</param>
+        /// <param name="secondColStartRange">Second column start range</param>
+        private void GetExcelConfigData(
+            out string firstColName,
+            out string secondColName,
+            out string filename,
+            out int firstColStartRange,
+            out int secondColStartRange)
+        {
+            filename = this.configuration["Lab7.InputExcelFile"];
+            firstColName = this.configuration["Lab7.FirstColumn"];
+            secondColName = this.configuration["Lab7.SecondColumn"];
+
+            if (!int.TryParse(this.configuration["Lab7.FirstColumnStartRange"], out firstColStartRange))
+            {
+                throw new LabConfigurationException("Lab7.FirstColumnStartRange does not exist.");
+            }
+
+            if (!int.TryParse(this.configuration["Lab7.SecondColumnStartRange"], out secondColStartRange))
+            {
+                throw new LabConfigurationException("Lab7.SecondColumnStartRange does not exist.");
+            }
+
+            if (string.IsNullOrWhiteSpace(firstColName))
+            {
+                throw new LabConfigurationException("Lab7.FirstColumn does not exist.");
+            }
+
+            if (string.IsNullOrWhiteSpace(secondColName))
+            {
+                throw new LabConfigurationException("Lab7.SecondColumn does not exist.");
+            }
+
+            if (string.IsNullOrWhiteSpace(filename))
+            {
+                throw new LabConfigurationException("Lab7.InputExcelFile does not exist.");
+            }
+
+            if (!File.Exists(filename))
+            {
+                throw new LabConfigurationException("Lab7.InputExcelFile does not exist.");
+            }
         }
 
         /// <summary>
@@ -195,10 +352,10 @@ namespace Epam.HomeWork.Lab7Runner
         /// </summary>
         private void ConfigureTargetWriter()
         {
-            if (this.configuration["TargetOutput"] == "File")
+            if (this.configuration["Lab7.TargetOutput"] == "File")
             {
-                string outputDir = this.configuration["TargertOutputDirectory"];
-                string filename = this.configuration["OutputFilename"];
+                string outputDir = this.configuration["Lab7.TargertOutputDirectory"];
+                string filename = this.configuration["Lab7.OutputFilename"];
 
                 if (string.IsNullOrWhiteSpace(outputDir) || !Directory.Exists(outputDir))
                 {
@@ -212,7 +369,7 @@ namespace Epam.HomeWork.Lab7Runner
 
                 this.writer = new FilesStatisticsExcelWriter(outputDir, filename);
             }
-            else if (this.configuration["TargetOutput"] == "Console")
+            else if (this.configuration["Lab7.TargetOutput"] == "Console")
             {
                 this.writer = new FilesStatisticsConsoleWriter();
             }
@@ -221,5 +378,7 @@ namespace Epam.HomeWork.Lab7Runner
                 throw new LabConfigurationException("Lab7Runner: No target output is not specified.");
             }
         }
+
+        #endregion
     }
 }
