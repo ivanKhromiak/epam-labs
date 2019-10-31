@@ -61,5 +61,10 @@ namespace Epam.HomeWork.Lab6.Common
         {
             return MemberwiseClone();
         }
+
+        public override string ToString()
+        {
+            return $"({X}; {Y})";
+        }
     }
 }
