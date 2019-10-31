@@ -21,6 +21,11 @@
                 throw new ArgumentException("searchDirectoryName cannot be null or empty", "searchDirectoryName");
             }
 
+            if(!Directory.Exists(searchDirectoryName))
+            {
+                throw new ArgumentException("Search directory does not exist.", nameof(searchDirectoryName));
+            }
+
             return Directory.GetFiles(searchDirectoryName, $"*{filename}*.{fileExtension}", SearchOption.AllDirectories);
         }
     }
