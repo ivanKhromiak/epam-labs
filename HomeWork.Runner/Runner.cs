@@ -7,6 +7,7 @@ namespace Epam.HomeWork.Runner
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using CustomLogger;
     using Epam.HomeWork.Common;
     
@@ -85,6 +86,9 @@ namespace Epam.HomeWork.Runner
                     }
                 }
             }
+
+            Console.WriteLine("Press any key to exit...");
+            Console.ReadLine();
         }
 
         /// <summary>
@@ -93,7 +97,9 @@ namespace Epam.HomeWork.Runner
         /// <returns>List of runners</returns>
         private static IEnumerable<IConsoleLabRunner> GetLabRunners()
         {
-            return ReflectionScanner.Scan<IConsoleLabRunner>(SearchOption.AllDirectories);
+            return ReflectionScanner
+                .Scan<IConsoleLabRunner>(SearchOption.AllDirectories)
+                .OrderBy(r => r.GetType().Name);
         }
     }
 }
