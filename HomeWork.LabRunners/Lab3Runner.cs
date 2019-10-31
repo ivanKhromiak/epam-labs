@@ -28,12 +28,12 @@
         {
             RunDirectoryTask();
 
-            Console.WriteLine("Press any key to continue...");
+            Console.WriteLine("\tPress any key to continue...");
             Console.ReadKey();
 
             RunFileFindTask();
 
-            Console.WriteLine("Press any key to continue...");
+            Console.WriteLine("\tPress any key to continue...");
             Console.ReadKey();
         }
 
@@ -45,7 +45,7 @@
                 Console.BackgroundColor);
             try
             {
-                Console.Write("Please, enter directory name: ");
+                Console.Write("\tPlease, enter directory name: ");
                 string inputDirectory = Console.ReadLine();
                 var files = DirectoryVisualizer.GetFilesFromDirectory(inputDirectory,
                     maxSubDirectoryDepth: MaxSubDirectoryDepth);
@@ -65,11 +65,6 @@
                 Success = false;
                 Errors.Add(e.Message);
             }
-            catch (Exception e)
-            {
-                Success = false;
-                Errors.Add($"Unexpected exception: {e.Message}");
-            }
         }
 
         private void RunFileFindTask()
@@ -79,11 +74,16 @@
                 ConsoleColor.Red,
                 Console.BackgroundColor);
 
-            string ext = "cs";
-            string filename = "Lab2";
-            string directoryName = @"E:\Epam";
+            Console.Write("\tEnter file extension: ");
+            string ext = Console.ReadLine();
 
-            Console.WriteLine($"Searching for file like *{filename}*.{ext} in {directoryName}");
+            Console.Write("\tEnter partial filename: ");
+            string filename = Console.ReadLine();
+
+            Console.Write("\tEnter search directory name: ");
+            string directoryName = Console.ReadLine();
+
+            Console.WriteLine($"\tSearching for file like *{filename}*.{ext} in {directoryName}");
 
             try
             {
@@ -98,7 +98,7 @@
                 }
                 else
                 {
-                    Console.WriteLine($"No files like *{filename}*.{ext} found!");
+                    Console.WriteLine($"\tNo files like *{filename}*.{ext} found!");
                 }
             }
             catch (ArgumentException e)
@@ -110,11 +110,6 @@
             {
                 Success = false;
                 Errors.Add(e.Message);
-            }
-            catch (Exception e)
-            {
-                Success = false;
-                Errors.Add($"Unexpected exception: {e.Message}");
             }
         }
     }
