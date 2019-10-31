@@ -17,6 +17,7 @@
   <ItemGroup>
     <ProjectReference Include="..\CustomLogger\CustomLogger.csproj" />
     <ProjectReference Include="..\HomeWork.Common\HomeWork.Common.csproj" />
+    <ProjectReference Include="..\HomeWork.LabRunners\HomeWork.LabRunners.csproj" />
   </ItemGroup>
 
   <ItemGroup>
