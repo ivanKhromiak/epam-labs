@@ -1,72 +1,76 @@
-﻿using System;
-using System.Collections.Generic;
+﻿// <copyright file="LogFactory.cs" company="Roman Moravskyi">
+// Copyright (c) Roman Moravskyi. All rights reserved.
+// </copyright>
 
 namespace CustomLogger
 {
+    using System;
+    using System.Collections.Generic;
+
     /// <summary>
     /// Manages Loggers and creates new ones
     /// </summary>
     public class LogFactory : IDisposable
     {
-        private readonly LoggerCache _loggerCache = new LoggerCache();
-        private LoggingConfiguration _loggingConfiguration;
-        private readonly object _syncRoot = new object();
+        /// <summary>
+        /// Sync Root
+        /// </summary>
+        private readonly object syncRoot = new object();
 
+        /// <summary>
+        /// Cache for created loggers
+        /// </summary>
+        private readonly LoggerCache loggerCache = new LoggerCache();
+
+        /// <summary>
+        /// Current logging configuration
+        /// </summary>
+        private LoggingConfiguration loggingConfiguration;
+
+        /// <summary>
+        /// Disposed Value
+        /// </summary>
+        private bool disposedValue = false;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LogFactory" /> class.
+        /// </summary>
         internal LogFactory() : this(new LoggingConfiguration())
-        { }
+        {
+        }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LogFactory" /> class.
+        /// </summary>
+        /// <param name="configuration">Logging Configuration</param>
         internal LogFactory(LoggingConfiguration configuration)
         {
-            LoggingConfiguration = configuration
+            this.LoggingConfiguration = configuration
                 ?? throw new ArgumentNullException(nameof(configuration));
 
-            LoggingConfiguration.LoggingConfigChanged += LoggingConfigChanged;
+            this.LoggingConfiguration.LoggingConfigChanged += this.LoggingConfigChanged;
         }
 
+        /// <summary>
+        /// Gets or sets Logging Configuration
+        /// </summary>
         public LoggingConfiguration LoggingConfiguration
         {
-            get => _loggingConfiguration;
+            get => this.loggingConfiguration;
             set
             {
-                _loggingConfiguration = value
+                this.loggingConfiguration = value
                     ?? throw new ArgumentNullException(nameof(value));
 
-                ReconfigLoggers(LoggingConfiguration);
-            }
-        }
-
-        /// <summary>
-        /// Event handler for LoggingConfiguration.LoggingConfigChanged
-        /// </summary>
-        private void LoggingConfigChanged()
-        {
-            ReconfigLoggers(LoggingConfiguration);
-        }
-
-        /// <summary>
-        /// Reconfigs loggers with new configuration
-        /// </summary>
-        /// <param name="loggingConfiguration"></param>
-        private void ReconfigLoggers(LoggingConfiguration loggingConfiguration)
-        {
-            IList<Logger> loggers;
-
-            lock (_syncRoot)
-            {
-                loggers = _loggerCache.GetLoggers();
-            }
-
-            foreach (var logger in loggers)
-            {
-                logger.Configuration = loggingConfiguration;
+                this.ReconfigLoggers(LoggingConfiguration);
             }
         }
 
         /// <summary>
         /// Gets a logger from cache or creates new logger
         /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
+        /// <param name="name">Name of a logger</param>
+        /// <returns><see cref="Logger"/></returns>
         public Logger GetLogger(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
@@ -76,15 +80,15 @@ namespace CustomLogger
 
             Logger logger = null;
 
-            lock (_syncRoot)
+            lock (this.syncRoot)
             {
                 var cacheKey = new LoggerCacheKey(name, typeof(Logger));
-                logger = _loggerCache.Retrieve(cacheKey);
+                logger = this.loggerCache.Retrieve(cacheKey);
 
                 if (logger == null)
                 {
                     logger = new Logger(name, this, LoggingConfiguration);
-                    _loggerCache.InsertOrUpdate(cacheKey, logger);
+                    this.loggerCache.InsertOrUpdate(cacheKey, logger);
                 }
             }
 
@@ -92,29 +96,102 @@ namespace CustomLogger
         }
 
         /// <summary>
+        /// Dispose current object
+        /// </summary>
+        public void Dispose()
+        {
+            this.Dispose(true);
+        }
+
+        /// <summary>
+        /// Dispose current object
+        /// </summary>
+        /// <param name="disposing">Disposed value</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!this.disposedValue)
+            {
+                if (disposing)
+                {
+                    this.LoggingConfiguration.Dispose();
+                }
+
+                this.disposedValue = true;
+            }
+        }
+
+        /// <summary>
+        /// Event handler for LoggingConfiguration.LoggingConfigChanged
+        /// </summary>
+        private void LoggingConfigChanged()
+        {
+            this.ReconfigLoggers(LoggingConfiguration);
+        }
+
+        /// <summary>
+        /// Sets new configuration to all loggers
+        /// </summary>
+        /// <param name="loggingConfiguration">Logging configuration</param>
+        private void ReconfigLoggers(LoggingConfiguration loggingConfiguration)
+        {
+            IList<Logger> loggers;
+
+            lock (this.syncRoot)
+            {
+                loggers = this.loggerCache.GetLoggers();
+            }
+
+            foreach (var logger in loggers)
+            {
+                logger.Configuration = loggingConfiguration;
+            }
+        }
+
+        /// <summary>
         /// Key for Dictionary of Logger
         /// </summary>
         private class LoggerCacheKey
         {
+            /// <summary>
+            /// Initializes a new instance of the <see cref="LoggerCacheKey" /> class.
+            /// </summary>
+            /// <param name="name">Logger name</param>
+            /// <param name="type">Logger type</param>
             public LoggerCacheKey(string name, Type type)
             {
-                Name = name;
-                Type = type;
+                this.Name = name;
+                this.Type = type;
             }
 
+            /// <summary>
+            /// Gets a logger name
+            /// </summary>
             public string Name { get; }
+
+            /// <summary>
+            /// Gets a logger Type/>
+            /// </summary>
             public Type Type { get; }
 
+            /// <summary>
+            /// Checks if two keys are equal
+            /// </summary>
+            /// <param name="obj">Other key</param>
+            /// <returns>value indicating whether two keys are equal</returns>
             public override bool Equals(object obj)
             {
                 return obj is LoggerCacheKey key &&
-                       Name == key.Name &&
+                       this.Name == key.Name &&
                        EqualityComparer<Type>.Default.Equals(Type, key.Type);
             }
 
+            /// <summary>
+            /// Gets HashCode
+            /// </summary>
+            /// <returns>HashCode of current object</returns>
             public override int GetHashCode()
             {
-                return HashCode.Combine(Name, Type);
+                return HashCode.Combine(this.Name, this.Type);
             }
         }
 
@@ -123,27 +200,30 @@ namespace CustomLogger
         /// </summary>
         private class LoggerCache
         {
-            private readonly Dictionary<LoggerCacheKey, WeakReference<Logger>> _cache
+            /// <summary>
+            /// Dictionary of <see cref="LoggerCacheKey"/> and <see cref="WeakReference{Logger}"/>
+            /// </summary>
+            private readonly Dictionary<LoggerCacheKey, WeakReference<Logger>> loggersCache
                 = new Dictionary<LoggerCacheKey, WeakReference<Logger>>();
 
             /// <summary>
             /// Inserts or updates logger
             /// </summary>
-            /// <param name="key"></param>
-            /// <param name="logger"></param>
+            /// <param name="key">Logger cache key</param>
+            /// <param name="logger">Logger name</param>
             public void InsertOrUpdate(LoggerCacheKey key, Logger logger)
             {
-                _cache[key] = new WeakReference<Logger>(logger);
+                this.loggersCache[key] = new WeakReference<Logger>(logger);
             }
 
             /// <summary>
             /// Retrieve a logger from cache
             /// </summary>
-            /// <param name="key"></param>
+            /// <param name="key">Logger cache key</param>
             /// <returns>Logger, null if not alive</returns>
             public Logger Retrieve(LoggerCacheKey key)
             {
-                if (_cache.TryGetValue(key, out var logger))
+                if (this.loggersCache.TryGetValue(key, out var logger))
                 {
                     if (logger.TryGetTarget(out Logger target))
                     {
@@ -151,20 +231,21 @@ namespace CustomLogger
                         return target;
                     }
                 }
+
                 return null;
             }
 
             /// <summary>
             /// Returns all alive loggers in the cache
             /// </summary>
-            /// <returns>IList<Loggers></returns>
+            /// <returns>List of Loggers</returns>
             public IList<Logger> GetLoggers()
             {
                 var loggers = new List<Logger>();
 
-                foreach(WeakReference<Logger> reference in _cache.Values)
+                foreach (WeakReference<Logger> reference in this.loggersCache.Values)
                 {
-                    if(reference.TryGetTarget(out Logger logger))
+                    if (reference.TryGetTarget(out Logger logger))
                     {
                         loggers.Add(logger);
                     }
@@ -173,25 +254,5 @@ namespace CustomLogger
                 return loggers;
             }
         }
-
-        #region IDisposable
-        private bool disposedValue = false;
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue)
-            {
-                if (disposing)
-                {
-                    LoggingConfiguration.Dispose();
-                }
-                disposedValue = true;
-            }
-        }
-        public void Dispose()
-        {
-            Dispose(true);
-        }
-        #endregion
     }
 }
