@@ -1,4 +1,8 @@
-﻿namespace Epam.HomeWork.Runner
+﻿// <copyright file="ReflectionScanner.cs" company="Roman Moravskyi">
+// Copyright (c) Roman Moravskyi. All rights reserved.
+// </copyright>
+
+namespace Epam.HomeWork.Runner
 {
     using System;
     using System.Collections.Generic;
@@ -6,15 +10,22 @@
     using System.Linq;
     using System.Reflection;
 
+    /// <summary>
+    /// Scans for all types in current project
+    /// </summary>
     public class ReflectionScanner
     {
-        public static string DirPath = AppDomain.CurrentDomain.BaseDirectory;
+        /// <summary>
+        /// Base directory 
+        /// </summary>
+        private static readonly string BaseDir = AppDomain.CurrentDomain.BaseDirectory;
 
-        public static string[] ScanLibs(SearchOption option)
-        {
-            return Directory.GetFiles(DirPath, "*.dll", option);
-        }
-
+        /// <summary>
+        /// Gets list of created instances of Type <typeparamref name="T"/>
+        /// </summary>
+        /// <typeparam name="T">Type to search</typeparam>
+        /// <param name="option">Search options</param>
+        /// <returns>List of instances of Type <typeparamref name="T"/></returns>
         public static List<T> Scan<T>(SearchOption option)
         {
             var result = new List<T>();
@@ -36,12 +47,25 @@
                     var newInstance = (T)a.CreateInstance(item.ToString());
 
                     if (newInstance == null)
+                    {
                         throw new Exception($"Could not initialize instance in dll: {filePath}");
+                    }
 
                     result.Add(newInstance);
                 }
             }
+
             return result;
+        }
+
+        /// <summary>
+        /// Scans for libraries in <see cref="BaseDir"/>
+        /// </summary>
+        /// <param name="option">Search options</param>
+        /// <returns>Array of directories names</returns>
+        private static string[] ScanLibs(SearchOption option)
+        {
+            return Directory.GetFiles(BaseDir, "*.dll", option);
         }
     }
 }
