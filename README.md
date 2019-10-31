@@ -3,10 +3,11 @@
 This repo contains homework for Epam .NET Lab #10
 
 ## Projects
-* [CustomLogger](CustomLogger/README.md)
+* [CustomLogger](CustomLogger)
 
-* [HomeWork.Common](HomeWork.Common/README.md)
-* [HomeWork.Runner](HomeWork.Runner/README.md)
+* [HomeWork.Common](HomeWork.Common)
+* [HomeWork.Runner](HomeWork.Runner)
+* [HomeWork.LabRunners](HomeWork.LabRunners)
 * [Lab1](HomeWork.Labs/Lab1)
 * [Lab2](HomeWork.Labs/Lab2)
 * [Lab3](HomeWork.Labs/Lab3)
