@@ -12,6 +12,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\HomeWork.Common\HomeWork.Common.csproj" />
+    <ProjectReference Include="..\HomeWork.Labs\Lab1\Lab1.csproj" />
+    <ProjectReference Include="..\HomeWork.Labs\Lab2\Lab2.csproj" />
+    <ProjectReference Include="..\HomeWork.Labs\Lab3\Lab3.csproj" />
+    <ProjectReference Include="..\HomeWork.Labs\Lab4\Lab4.csproj" />
+    <ProjectReference Include="..\HomeWork.Labs\Lab5\Lab5.csproj" />
+    <ProjectReference Include="..\HomeWork.Labs\Lab6\Lab6.csproj" />
+    <ProjectReference Include="..\HomeWork.Labs\Lab7\Lab7.csproj" />
   </ItemGroup>
 
   <ItemGroup>
