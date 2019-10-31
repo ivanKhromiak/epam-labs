@@ -7,13 +7,12 @@ This repo contains homework for Epam .NET Lab #10
 
 * [HomeWork.Common](HomeWork.Common/README.md)
 * [HomeWork.Runner](HomeWork.Runner/README.md)
-* [Lab1](Lab1/README.md)
-* [Lab1Runner](Lab1Runner/README.md)
-* [Lab2](Lab2/README.md)
-* [Lab2Runner](Lab2Runner/README.md)
-* [Lab3](Lab3/README.md)
-* [Lab3Runner](Lab3Runner/README.md)
-* [Lab4](Lab4/README.md)
-* [Lab4Runner](Lab4Runner/README.md)
+* [Lab1](HomeWork.Labs/Lab1)
+* [Lab2](HomeWork.Labs/Lab2)
+* [Lab3](HomeWork.Labs/Lab3)
+* [Lab4](HomeWork.Labs/Lab4)
+* [Lab5](HomeWork.Labs/Lab5)
+* [Lab6](HomeWork.Labs/Lab6)
+* [Lab7](HomeWork.Labs/Lab7)
 
 ### Roman Moravskyi, 2019
