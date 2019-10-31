@@ -39,7 +39,7 @@ namespace Epam.HomeWork.Lab7
                 .EnumerateFiles("*", SearchOption.AllDirectories)
                 .Select(fi => fi.Name);
 
-            return firstDirFilenames.Intersect(secondDirFilenames);
+            return EnumerableComparer<string>.GetDuplicate(firstDirFilenames, secondDirFilenames);
         }
 
         /// <summary>
@@ -67,11 +67,8 @@ namespace Epam.HomeWork.Lab7
             var secondDirFilenames = secondDirectory
                 .EnumerateFiles("*", SearchOption.AllDirectories)
                 .Select(fi => fi.Name);
-
-            return firstDirFilenames
-                .Except(secondDirFilenames)
-                .Union(secondDirFilenames
-                    .Except(firstDirFilenames));
+            
+            return EnumerableComparer<string>.GetUnique(firstDirFilenames, secondDirFilenames);
         }
     }
 }
