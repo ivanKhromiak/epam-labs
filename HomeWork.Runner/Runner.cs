@@ -82,7 +82,7 @@ namespace Epam.HomeWork.Runner
                     foreach (var error in runner.Errors)
                     {
                         Console.WriteLine($"Error: {error}");
-                        logger.LogMessage(error, LogLevel.Error);
+                        logger.LogMessage(error);
                     }
                 }
             }
