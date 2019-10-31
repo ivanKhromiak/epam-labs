@@ -14,7 +14,7 @@
             Success = false;
         }
 
-        public string Description => "Serialization";
+        public string Description => "Lab 4: Serialization";
 
         public IList<string> Errors { get; }
 
