@@ -2,8 +2,9 @@
 // Copyright (c) Roman Moravskyi. All rights reserved.
 // </copyright>
 
-namespace Epam.HomeWork.Lab7Runner
+namespace Epam.HomeWork.LabRunners.Common
 {
+    using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
@@ -13,7 +14,7 @@ namespace Epam.HomeWork.Lab7Runner
     /// <summary>
     /// Used to write files stats into excel doc 
     /// </summary>
-    public class FilesStatisticsExcelWriter : IFilesStatisticWriter
+    public class FilesStatisticsExcelWriter : IStatisticWriter<string>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="FilesStatisticsExcelWriter" /> class.
@@ -39,11 +40,15 @@ namespace Epam.HomeWork.Lab7Runner
         /// <summary>
         /// Writes statistics into xlsx data format
         /// </summary>
-        /// <param name="filenames">List of filenames</param>
+        /// <param name="statistics">List of statistics</param>
         /// <param name="statsName">Statistics name</param>
-        /// <param name="directories">List of directories involved</param>
-        public void WriteFilenameData(IEnumerable<string> filenames, string statsName, IEnumerable<DirectoryInfo> directories)
+        public void WriteData(IEnumerable<StatisticInfo<string>> statistics, string statsName)
         {
+            if (statistics == null)
+            {
+                throw new ArgumentNullException(nameof(statistics));
+            }
+
             using (ExcelEngine excelEngine = new ExcelEngine())
             {
                 IApplication application = excelEngine.Excel;
@@ -53,32 +58,29 @@ namespace Epam.HomeWork.Lab7Runner
 
                 int i = 1;
 
-                worksheet.Range[$"A{i}"].Text = "Directories";
-                worksheet.Range[$"B{i}"].Text = $"Count: {directories.Count()}";
-
-                ++i;
-
-                foreach (var dir in directories)
+                foreach (var stat in statistics)
                 {
-                    worksheet.Range[$"A{i}"].Text = "Directory: ";
-                    worksheet.Range[$"B{i}"].Text = dir.FullName;
+                    if (stat == null || stat.Data == null || stat.Name == null)
+                    {
+                        throw new ArgumentException("Data in statistics is null!");
+                    }
+
+                    worksheet.Range[$"A{i}"].Text = stat.Name;
+                    worksheet.Range[$"B{i}"].Text = $"Count: {stat.Data.Count()}";
+
                     ++i;
-                }
-                ++i;
-
-                worksheet.Range[$"A{i}"].Text = statsName;
-                worksheet.Range[$"B{i}"].Text = $"Count: {filenames.Count()}";
-                ++i;
-
-                foreach (var filename in filenames)
-                {
-                    worksheet.Range[$"A{i}"].Text = "Filename: ";
-                    worksheet.Range[$"B{i}"].Text = filename;
+                    
+                    foreach (var item in stat.Data)
+                    {
+                        worksheet.Range[$"A{i}"].Text = $"{stat.DataItemName}: ";
+                        worksheet.Range[$"B{i}"].Text = item;
+                        ++i;
+                    }
                     ++i;
                 }
 
                 worksheet.AutofitColumn(1);
-            
+
                 var namePart = Regex.Replace(statsName, @"\s+", string.Empty);
 
                 // Saving the workbook to disk in XLSX format
