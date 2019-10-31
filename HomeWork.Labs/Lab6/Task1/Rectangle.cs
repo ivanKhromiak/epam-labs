@@ -43,21 +43,27 @@ namespace Epam.HomeWork.Lab6.Task1
         /// <param name="bottomLeft">BottomLeft <see cref="PointF" /> of rectangle</param>
         public Rectangle(float width, float height, PointF bottomLeft)
         {
-            this.Width = width;
-            this.Height = height;
-            this.BottomLeft = bottomLeft.Clone() as PointF;
+            if (width < 0 || height < 0)
+            {
+                throw new ArgumentException("Width or height cannot be less than zero.");
+            }
+
+            this.bottomLeft = bottomLeft.Clone() as PointF;
+
+            this.width = width;
+            this.height = height;
 
             this.BottomRight = new PointF(
-                this.BottomLeft.X + this.Width,
-                this.BottomLeft.Y);
+                this.bottomLeft.X + width,
+                this.bottomLeft.Y);
 
             this.TopLeft = new PointF(
-                this.BottomLeft.X,
-                this.BottomLeft.Y + this.Height);
+                this.bottomLeft.X,
+                this.bottomLeft.Y + height);
 
             this.TopRight = new PointF(
-                this.BottomLeft.X + this.Width,
-                this.BottomLeft.Y + this.Height);
+                this.bottomLeft.X + width,
+                this.bottomLeft.Y + height);        
         }
 
         /// <summary>
