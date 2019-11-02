@@ -9,6 +9,7 @@ namespace Epam.HomeWork.Lab7Runner
     using System.Diagnostics;
     using System.IO;
     using Epam.HomeWork.Common;
+    using Epam.HomeWork.Common.IO;
     using Epam.HomeWork.Lab7;
     using Epam.HomeWork.LabRunners.Common;
     using Microsoft.Extensions.Configuration;
@@ -16,7 +17,7 @@ namespace Epam.HomeWork.Lab7Runner
     /// <summary>
     /// Runner for Lab7
     /// </summary>
-    public class Lab7Runner : IConsoleLabRunner
+    public class Lab7Runner : ILabRunner
     {
         /// <summary>
         /// App configuration
@@ -26,21 +27,24 @@ namespace Epam.HomeWork.Lab7Runner
         /// <summary>
         /// Stats writer
         /// </summary>
-        private IStatisticWriter<string> writer;
+        private IStatisticWriter<string> statisticWriter;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Lab7Runner" /> class.
+        /// Initializes a new instance of the <see cref="Lab7Runner"/> class.
         /// </summary>
         public Lab7Runner()
         {
             this.Errors = new List<string>();
             this.Success = false;
-            var builder = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
 
-            this.configuration = builder.Build();
+            this.configuration = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .Build();
 
             this.ConfigureTargetWriter();
+
+            this.Writer = new ConsoleWriter();
+            this.Reader = new ConsoleReader();
         }
 
         /// <summary>
@@ -59,10 +63,30 @@ namespace Epam.HomeWork.Lab7Runner
         public bool Success { get; private set; }
 
         /// <summary>
+        /// Gets or sets writer
+        /// </summary>
+        public IWriter Writer { get; set; }
+
+        /// <summary>
+        /// Gets or sets reader
+        /// </summary>
+        public IReader Reader { get; set; }
+
+        /// <summary>
         /// Runs console lab
         /// </summary>
-        public void RunConsoleLab()
+        public void Run()
         {
+            if (this.Writer == null)
+            {
+                throw new NullReferenceException($"{nameof(this.Writer)} value cannot be null");
+            }
+
+            if (this.Reader == null)
+            {
+                throw new NullReferenceException($"{nameof(this.Reader)} value cannot be null");
+            }
+
             this.Success = true;
 
             try
@@ -72,8 +96,8 @@ namespace Epam.HomeWork.Lab7Runner
                 DirectoryInfo firstDir = new DirectoryInfo(firstDirName);
                 DirectoryInfo secondDir = new DirectoryInfo(secondDirName);
 
-                this.RunDuplicateFilesTask(firstDir, secondDir, this.writer);
-                this.RunUniqueFilesTask(firstDir, secondDir, this.writer);
+                this.RunDuplicateFilesTask(firstDir, secondDir, this.statisticWriter);
+                this.RunUniqueFilesTask(firstDir, secondDir, this.statisticWriter);
 
                 this.GetExcelConfigData(
                     out string firstColName,
@@ -92,13 +116,21 @@ namespace Epam.HomeWork.Lab7Runner
             catch (ArgumentException e)
             {
                 this.Success = false;
-                this.Errors.Add(e.Message);
+                this.Errors.Add($"{e.TargetSite.Name}: {e.Message}");
             }
             catch (PathTooLongException e)
             {
                 this.Success = false;
-                this.Errors.Add(e.Message);
+                this.Errors.Add($"{e.TargetSite.Name}: {e.Message}");
             }
+            catch (Exception e)
+            {
+                this.Success = false;
+                throw e;
+            }
+
+            this.Writer.WriteLine("\t\nPress any key to continue...");
+            this.Reader.ReadKey();
         }
 
         #region Tasks
@@ -108,11 +140,11 @@ namespace Epam.HomeWork.Lab7Runner
         /// </summary>
         /// <param name="firstDir">First directory</param>
         /// <param name="secondDir">Second directory</param>
-        /// <param name="writer">Output writer</param>
+        /// <param name="statisticWriter">Output writer</param>
         private void RunDuplicateFilesTask(
             DirectoryInfo firstDir,
             DirectoryInfo secondDir,
-            IStatisticWriter<string> writer)
+            IStatisticWriter<string> statisticWriter)
         {
             if (firstDir == null)
             {
@@ -124,15 +156,15 @@ namespace Epam.HomeWork.Lab7Runner
                 throw new ArgumentNullException(nameof(secondDir));
             }
 
-            if (writer == null)
+            if (statisticWriter == null)
             {
-                throw new ArgumentNullException(nameof(writer));
+                throw new ArgumentNullException(nameof(statisticWriter));
             }
 
-            ConsoleHelper.WriteHeaderMessage(
-                "Task 1: Info about duplicate files in two directories...\n",
-                ConsoleColor.Yellow,
-                ConsoleColor.Black);
+            ConsoleWriterHelper
+                .WriteHeaderMessage(
+                    "Task 1: Info about duplicate files in two directories:\n",
+                    this.Writer);
 
             var watch = new Stopwatch();
 
@@ -140,6 +172,25 @@ namespace Epam.HomeWork.Lab7Runner
             var duplicateFiles = DirectoryComparer.GetDuplicateFiles(firstDir, secondDir);
             watch.Stop();
 
+            this.WriteDuplicateFilesStats(firstDir, secondDir, statisticWriter, duplicateFiles);
+
+            this.Writer.WriteLine($"\tDuplicate files task finished." +
+                $" Elapsed time: {watch.ElapsedMilliseconds} ms.\n");
+        }
+
+        /// <summary>
+        /// Writes statistic about duplicate files
+        /// </summary>
+        /// <param name="firstDir">First directory</param>
+        /// <param name="secondDir">Second directory</param>
+        /// <param name="statisticWriter">Output writer</param>
+        /// <param name="duplicateFiles">Duplicate files</param>
+        private void WriteDuplicateFilesStats(
+            DirectoryInfo firstDir,
+            DirectoryInfo secondDir,
+            IStatisticWriter<string> statisticWriter,
+            IEnumerable<string> duplicateFiles)
+        {
             var fileStatInfo = new StatisticInfo<string>
             {
                 Name = "Duplicate files",
@@ -154,11 +205,9 @@ namespace Epam.HomeWork.Lab7Runner
                 DataItemName = "Directory"
             };
 
-            writer.WriteData(
+            statisticWriter.WriteData(
                 new[] { directoryStatsInfo, fileStatInfo },
                 "Duplicate Files");
-
-            Console.WriteLine($"Duplicate files task finished. Elapsed time: {watch.ElapsedMilliseconds} ms.\n");
         }
 
         /// <summary>
@@ -187,10 +236,10 @@ namespace Epam.HomeWork.Lab7Runner
                 throw new ArgumentNullException(nameof(writer));
             }
 
-            ConsoleHelper.WriteHeaderMessage(
-                "Task 2: Info about unique diles in two directories...\n",
-                ConsoleColor.Yellow,
-                ConsoleColor.Black);
+            ConsoleWriterHelper
+                .WriteHeaderMessage(
+                    "Task 2: Info about unique diles in two directories:\n",
+                    this.Writer);
 
             var watch = new Stopwatch();
 
@@ -198,6 +247,24 @@ namespace Epam.HomeWork.Lab7Runner
             var uniqueFiles = DirectoryComparer.GetUniqueFiles(firstDir, secondDir);
             watch.Stop();
 
+            this.WriteUniqueFilesStats(firstDir, secondDir, writer, uniqueFiles);
+
+            this.Writer.WriteLine($"\tUnique files task finished. Elapsed time: {watch.ElapsedMilliseconds} ms.\n");
+        }
+
+        /// <summary>
+        /// Writes statistic about unique files
+        /// </summary>
+        /// <param name="firstDir">First directory</param>
+        /// <param name="secondDir">Second directory</param>
+        /// <param name="statisticWriter">Output writer</param>
+        /// <param name="uniqueFiles">Unique files</param>
+        private void WriteUniqueFilesStats(
+            DirectoryInfo firstDir,
+            DirectoryInfo secondDir,
+            IStatisticWriter<string> statisticWriter,
+            IEnumerable<string> uniqueFiles)
+        {
             var fileStatInfo = new StatisticInfo<string>
             {
                 Name = "Unique files",
@@ -212,11 +279,9 @@ namespace Epam.HomeWork.Lab7Runner
                 DataItemName = "Directory"
             };
 
-            writer.WriteData(
+            statisticWriter.WriteData(
                 new[] { directoryStatsInfo, fileStatInfo },
                 "Unique Files");
-
-            Console.WriteLine($"Unique files task finished. Elapsed time: {watch.ElapsedMilliseconds} ms.\n");
         }
 
         /// <summary>
@@ -234,21 +299,40 @@ namespace Epam.HomeWork.Lab7Runner
             int firstColStartRange,
             int secondColStartRange)
         {
-            ConsoleHelper.WriteHeaderMessage(
-                "Task 3: Info about unique elements in two excel columns...\n",
-                ConsoleColor.Yellow,
-                ConsoleColor.Black);
+            ConsoleWriterHelper
+                .WriteHeaderMessage(
+                    "Task 3: Info about unique elements in two excel columns:\n",
+                    this.Writer);
 
             IExcelColumnReader reader = new SyncfusionExcelColumnReader();
-            var watch = new Stopwatch();
 
+            var watch = new Stopwatch();
             watch.Start();
 
             var firstRange = reader.GetData(firstCol, firstColStartRange, filename);
             var secondRange = reader.GetData(secondCol, secondColStartRange, filename);
-
             var uniqueElements = EnumerableComparer<string>.GetUnique(firstRange, secondRange);
 
+            this.WriteUniqueColumnsElementsStats(firstCol, secondCol, filename, uniqueElements);
+
+            watch.Stop();
+
+            this.Writer.WriteLine($"]tUnique excel elements task finished. Elapsed time: {watch.ElapsedMilliseconds} ms.\n");
+        }
+
+        /// <summary>
+        /// Writes stats about unique elements between two columns
+        /// </summary>
+        /// <param name="firstCol">First column name</param>
+        /// <param name="secondCol">Second column name</param>
+        /// <param name="filename">Excel filename</param>
+        /// <param name="uniqueElements">List of unique elements</param>
+        private void WriteUniqueColumnsElementsStats(
+            string firstCol,
+            string secondCol,
+            string filename,
+            IEnumerable<string> uniqueElements)
+        {
             var elementsStats = new StatisticInfo<string>
             {
                 Name = "Unique excel column elements",
@@ -263,11 +347,7 @@ namespace Epam.HomeWork.Lab7Runner
                 DataItemName = "Column"
             };
 
-            this.writer.WriteData(new[] { colsStats, elementsStats }, "Unique Elements");
-
-            watch.Stop();
-
-            Console.WriteLine($"Unique excel elements task finished. Elapsed time: {watch.ElapsedMilliseconds} ms.\n");
+            this.statisticWriter.WriteData(new[] { colsStats, elementsStats }, "Unique Elements");
         }
 
         #endregion
@@ -367,11 +447,11 @@ namespace Epam.HomeWork.Lab7Runner
                     throw new LabConfigurationException("Lab7Runner: Output filename is not specified.");
                 }
 
-                this.writer = new FilesStatisticsExcelWriter(outputDir, filename);
+                this.statisticWriter = new FilesStatisticsExcelWriter(outputDir, filename);
             }
             else if (this.configuration["Lab7.TargetOutput"] == "Console")
             {
-                this.writer = new FilesStatisticsConsoleWriter();
+                this.statisticWriter = new FilesStatisticsConsoleWriter();
             }
             else
             {

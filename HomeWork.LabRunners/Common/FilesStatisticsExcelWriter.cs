@@ -85,7 +85,7 @@ namespace Epam.HomeWork.LabRunners.Common
 
                 // Saving the workbook to disk in XLSX format
                 using (MemoryStream ms = new MemoryStream())
-                using (FileStream fs = new FileStream($"{Path}{namePart}_{Filename}.xlsx", FileMode.OpenOrCreate))
+                using (FileStream fs = new FileStream($"{this.Path}{namePart}_{this.Filename}.xlsx", FileMode.OpenOrCreate))
                 {
                     workbook.SaveAs(ms);
                     ms.WriteTo(fs);

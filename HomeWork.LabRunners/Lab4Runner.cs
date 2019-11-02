@@ -4,14 +4,19 @@
     using System.Collections.Generic;
     using System.IO;
     using Epam.HomeWork.Common;
+    using Epam.HomeWork.Common.IO;
     using Epam.HomeWork.Lab4;
+    using Epam.HomeWork.LabRunners.Common;
 
-    public class Lab4Runner : IConsoleLabRunner
+    public class Lab4Runner : ILabRunner
     {
         public Lab4Runner()
         {
-            Errors = new List<string>();
-            Success = false;
+            this.Errors = new List<string>();
+            this.Success = false;
+
+            this.Writer = new ConsoleWriter();
+            this.Reader = new ConsoleReader();
         }
 
         public string Description => "Lab 4: Serialization";
@@ -20,79 +25,89 @@
 
         public bool Success { get; set; }
 
-        public void RunConsoleLab()
+        public IWriter Writer { get; set; }
+
+        public IReader Reader { get; set; }
+
+        public void Run()
         {
             try
             {
-                RunJsonSerialization();
-                RunXmlSerialization();
-                RunBinarySerialization();
+                this.RunJsonSerialization();
+                this.RunXmlSerialization();
+                this.RunBinarySerialization();
             }
             catch (ArgumentException e)
             {
-                Errors.Add(e.Message);
-                Success = false;
+                this.Errors.Add($"{e.TargetSite.Name}: {e.Message}");
+                this.Success = false;
             }
             catch (IOException e)
             {
-                Errors.Add(e.Message);
-                Success = false;
+                this.Errors.Add($"{e.TargetSite.Name}: {e.Message}");
+                this.Success = false;
             }
             catch(Exception e)
             {
-                Success = false;
+                this.Success = false;
                 throw e;
             }
         }
 
         private void RunJsonSerialization()
         {
-            ConsoleHelper.WriteHeaderMessage("Task 1: Json Serialization...\n", ConsoleColor.Yellow, ConsoleColor.Black);
-            RunSerializationForCarList(new JsonCollectionSerializer(), "carList.json");
+            ConsoleWriterHelper
+                .WriteHeaderMessage("Task 1: JSON Serialization:\n", this.Writer);
 
-            Console.WriteLine("Press any key to continue...");
-            Console.ReadKey();         
+            this.RunSerializationForCarList(new JsonCollectionSerializer(), "carList.json");
+
+            this.Writer.WriteLine("\t\nPress any key to continue...");
+            this.Reader.ReadKey();         
         }
 
         private void RunXmlSerialization()
         {
-            ConsoleHelper.WriteHeaderMessage("Task 2: Xml Serialization...\n", ConsoleColor.Yellow, ConsoleColor.Black);
-            RunSerializationForCarList(new XmlCollectionSerializer(), "carList.xml");
+            ConsoleWriterHelper
+                .WriteHeaderMessage("Task 2: XML Serialization:\n", this.Writer);
 
-            Console.WriteLine("Press any key to continue...");
-            Console.ReadKey();
+            this.RunSerializationForCarList(new XmlCollectionSerializer(), "carList.xml");
+
+            this.Writer.WriteLine("\t\nPress any key to continue...");
+            this.Reader.ReadKey();
         }
 
         private void RunBinarySerialization()
         {
-            ConsoleHelper.WriteHeaderMessage("Task 3: Binary Serialization...\n", ConsoleColor.Yellow, ConsoleColor.Black);
-            RunSerializationForCarList(new BinaryCollectionSerializer(), "carList.bin");
+            ConsoleWriterHelper
+                .WriteHeaderMessage("Task 3: Binary Serialization:\n", this.Writer);
 
-            Console.WriteLine("Press any key to continue...");
-            Console.ReadKey();
+            this.RunSerializationForCarList(new BinaryCollectionSerializer(), "carList.bin");
+
+            this.Writer.WriteLine("\t\nPress any key to continue...");
+            this.Reader.ReadKey();
         }
 
         private void RunSerializationForCarList(ICollectionSerializer serializer, string filename)
         {
-            var carList = GetCarList();
+            List<Car> carList = GetCarList();
 
-            Console.WriteLine("\tList before serialization:");
-            PrintCars(carList);
+            this.Writer.WriteLine("\tList before serialization:");
+            this.PrintCars(carList);
 
             serializer.Serialize(carList, filename);
 
             var deserializedCarList = serializer.Deserialize<Car>(filename);
 
-            Console.WriteLine("\tList after deserialization:");
-            PrintCars(deserializedCarList);
+            this.Writer.WriteLine("\tList after deserialization:");
+            this.PrintCars(deserializedCarList);
         }
 
-        private static void PrintCars(IEnumerable<Car> deserializedCarList)
+        private void PrintCars(IEnumerable<Car> deserializedCarList)
         {
             foreach (var car in deserializedCarList)
             {
-                Console.Write($"\tCar #{car.CarId}; price: {car.Price}; ");
-                Console.WriteLine($"quantity: {car.Quantity}; total: {car.Total}");
+                this.Writer.Write($"\tCar #{car.CarId}; price: {car.Price}; ");
+                this.Writer.WriteLine($"quantity: {car.Quantity}; total: {car.Total}");
             }
         }
 

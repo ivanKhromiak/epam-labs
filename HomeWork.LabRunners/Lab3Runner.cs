@@ -6,15 +6,20 @@
     using System.Collections.Generic;
     using Epam.HomeWork.Common;
     using Epam.HomeWork.Lab3;
+    using Epam.HomeWork.Common.IO;
+    using Epam.HomeWork.LabRunners.Common;
 
-    public class Lab3Runner : IConsoleLabRunner
+    public class Lab3Runner : ILabRunner
     {
         private const int MaxSubDirectoryDepth = 3;
 
         public Lab3Runner()
         {
-            Success = false;
-            Errors = new List<string>();
+            this.Success = false;
+            this.Errors = new List<string>();
+
+            this.Writer = new ConsoleWriter();
+            this.Reader = new ConsoleReader();
         }
 
         public bool Success { get; private set; }
@@ -24,66 +29,73 @@
         public string Description
             => "Lab 3: IO";
 
-        public void RunConsoleLab()
+        public IWriter Writer { get; set; }
+
+        public IReader Reader { get; set; }
+
+        public void Run()
         {
-            RunDirectoryTask();
+            this.RunDirectoryTask();
 
-            Console.WriteLine("\tPress any key to continue...");
-            Console.ReadKey();
+            this.Writer.WriteLine("\t\nPress any key to continue...");
+            this.Reader.ReadKey();
 
-            RunFileFindTask();
+            this.RunFileFindTask();
 
-            Console.WriteLine("\tPress any key to continue...");
-            Console.ReadKey();
+            this.Writer.WriteLine("\t\nPress any key to continue...");
+            this.Reader.ReadKey();
         }
 
         private void RunDirectoryTask()
         {
-            ConsoleHelper.WriteHeaderMessage(
-                "Task 1: Directory Visualizer\n",
-                ConsoleColor.Red,
-                Console.BackgroundColor);
+            ConsoleWriterHelper
+                 .WriteHeaderMessage("Task 1: Directory Visualizer\n", this.Writer);
+
             try
             {
-                Console.Write("\tPlease, enter directory name: ");
+                this.Writer.Write("\tPlease, enter directory name: ");
                 string inputDirectory = Console.ReadLine();
+
                 var files = DirectoryVisualizer.GetFilesFromDirectory(inputDirectory,
                     maxSubDirectoryDepth: MaxSubDirectoryDepth);
 
                 foreach (var file in files)
                 {
-                    Console.WriteLine(file);
+                    this.Writer.WriteLine($"\t{file}");
                 }
             }
             catch (ArgumentException e)
             {
-                Success = false;
-                Errors.Add(e.Message);
+                this.Success = false;
+                this.Errors.Add($"{e.TargetSite.Name}: {e.Message}");
             }
             catch (IOException e)
             {
-                Success = false;
-                Errors.Add(e.Message);
+                this.Success = false;
+                this.Errors.Add($"{e.TargetSite.Name}: {e.Message}");
+            }
+            catch (Exception e)
+            {
+                this.Success = false;
+                throw e;
             }
         }
 
         private void RunFileFindTask()
         {
-            ConsoleHelper.WriteHeaderMessage(
-                "Task 2: File Finder\n",
-                ConsoleColor.Red,
-                Console.BackgroundColor);
+            ConsoleWriterHelper
+                 .WriteHeaderMessage("Task 2: File Finder\n", this.Writer);
 
-            Console.Write("\tEnter file extension: ");
-            string ext = Console.ReadLine();
+            this.Writer.Write("\tEnter file extension: ");
+            string ext = this.Reader.ReadLine();
 
-            Console.Write("\tEnter partial filename: ");
-            string filename = Console.ReadLine();
+            this.Writer.Write("\tEnter partial filename: ");
+            string filename = this.Reader.ReadLine();
 
-            Console.Write("\tEnter search directory name: ");
-            string directoryName = Console.ReadLine();
+            this.Writer.Write("\tEnter search directory name: ");
+            string directoryName = this.Reader.ReadLine();
 
-            Console.WriteLine($"\tSearching for file like *{filename}*.{ext} in {directoryName}");
+            this.Writer.WriteLine($"\tSearching for file like *{filename}*.{ext} in {directoryName}");
 
             try
             {
@@ -93,23 +105,28 @@
                 {
                     foreach (var file in files)
                     {
-                        Console.WriteLine($"File: {file}");
+                        this.Writer.WriteLine($"\tFile: {file}");
                     }
                 }
                 else
                 {
-                    Console.WriteLine($"\tNo files like *{filename}*.{ext} found!");
+                    this.Writer.WriteLine($"\tNo files like *{filename}*.{ext} found!");
                 }
             }
             catch (ArgumentException e)
             {
-                Success = false;
-                Errors.Add(e.Message);
+                this.Success = false;
+                this.Errors.Add($"{e.TargetSite.Name}: {e.Message}");
             }
             catch (IOException e)
             {
-                Success = false;
-                Errors.Add(e.Message);
+                this.Success = false;
+                this.Errors.Add($"{e.TargetSite.Name}: {e.Message}");
+            }
+            catch (Exception e)
+            {
+                this.Success = false;
+                throw e;
             }
         }
     }

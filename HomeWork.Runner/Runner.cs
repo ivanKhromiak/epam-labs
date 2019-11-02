@@ -10,7 +10,9 @@ namespace Epam.HomeWork.Runner
     using System.Linq;
     using CustomLogger;
     using Epam.HomeWork.Common;
-    
+    using Epam.HomeWork.Common.IO;
+    using Epam.HomeWork.LabRunners.Common;
+
     /// <summary>
     /// Runner for all labs
     /// </summary>
@@ -23,6 +25,8 @@ namespace Epam.HomeWork.Runner
         {
             LoggerName = "LabRunnerLogger";
             LogFilename = Directory.GetCurrentDirectory() + @"\log.txt";
+            Writer = new ConsoleWriter();
+            Reader = new ConsoleReader();
         }
 
         /// <summary>
@@ -33,7 +37,17 @@ namespace Epam.HomeWork.Runner
         /// <summary>
         /// Gets or sets filename of log file
         /// </summary>
-        public static string LogFilename { get; set; } 
+        public static string LogFilename { get; set; }
+        
+        /// <summary>
+        /// Console writer
+        /// </summary>
+        public static ConsoleWriter Writer { get; }
+
+        /// <summary>
+        /// Console reader
+        /// </summary>
+        public static ConsoleReader Reader { get; }
 
         /// <summary>
         /// Starts the runner
@@ -71,34 +85,40 @@ namespace Epam.HomeWork.Runner
         {
             foreach (var runner in GetLabRunners())
             {
-                ConsoleHelper.WriteHeaderMessage(runner.Description, ConsoleColor.Yellow, ConsoleColor.Black);
-                Console.WriteLine();
+                ConsoleWriterHelper
+                    .WriteHeaderMessage(
+                        runner.Description, 
+                        Writer, 
+                        ConsoleColor.Yellow,
+                        ConsoleColor.Black);
 
-                runner.RunConsoleLab();
+                Writer.WriteLine(string.Empty);
+
+                runner.Run();
 
                 Console.WriteLine();
                 if (!runner.Success)
                 {
                     foreach (var error in runner.Errors)
                     {
-                        Console.WriteLine($"Error: {error}");
+                        Writer.WriteLine($"Error: {error}");
                         logger.LogMessage(error);
                     }
                 }
             }
 
-            Console.WriteLine("Press any key to exit...");
-            Console.ReadLine();
+            Writer.WriteLine("Press any key to exit...");
+            Reader.ReadLine();
         }
 
         /// <summary>
         /// Gets all runners referenced in this project
         /// </summary>
         /// <returns>List of runners</returns>
-        private static IEnumerable<IConsoleLabRunner> GetLabRunners()
+        private static IEnumerable<ILabRunner> GetLabRunners()
         {
             return ReflectionScanner
-                .Scan<IConsoleLabRunner>(SearchOption.AllDirectories)
+                .Scan<ILabRunner>(SearchOption.AllDirectories)
                 .OrderBy(r => r.GetType().Name);
         }
     }

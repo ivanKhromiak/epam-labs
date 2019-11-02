@@ -4,16 +4,21 @@
     using System.Collections.Generic;
     using System.Linq;
     using Epam.HomeWork.Common;
+    using Epam.HomeWork.Common.IO;
     using Epam.HomeWork.Lab5;
+    using Epam.HomeWork.LabRunners.Common;
 
-    public class Lab5Runner : IConsoleLabRunner
+    public class Lab5Runner : ILabRunner
     {
         private const string ModuleName = "Lab1.dll";
 
         public Lab5Runner()
         {
-            Errors = new List<string>();
-            Success = false;
+            this.Errors = new List<string>();
+            this.Success = false;
+
+            this.Writer = new ConsoleWriter();
+            this.Reader = new ConsoleReader();
         }
 
         public string Description => "Lab5: Assemblies and Reflection";
@@ -22,11 +27,16 @@
 
         public bool Success { get; private set; }
 
-        public void RunConsoleLab()
+        public IWriter Writer { get; set; }
+
+        public IReader Reader { get; set; }
+
+        public void Run()
         {
-            Success = true;
-            ConsoleHelper.WriteHeaderMessage("Task 1: Info about an assemblies...\n",
-                ConsoleColor.Yellow, ConsoleColor.Black);
+            this.Success = true;
+
+            ConsoleWriterHelper
+                .WriteHeaderMessage("Task 1: Info about assemblies:\n", this.Writer);
 
             try
             {
@@ -37,14 +47,22 @@
 
                 foreach (var info in ModuleVisualiser.GetInfo(labModule))
                 {
-                    Console.WriteLine(info);
+                    this.Writer.WriteLine($"{info}");
                 }
             }
             catch (ArgumentException e)
             {
-                Success = false;
-                Errors.Add(e.Message);
+                this.Success = false;
+                this.Errors.Add($"{e.TargetSite.Name}: {e.Message}");
             }
+            catch (Exception e)
+            {
+                this.Success = false;
+                throw e;
+            }
+
+            this.Writer.WriteLine("\t\nPress any key to continue...");
+            this.Reader.ReadKey();
         }
     }
 }

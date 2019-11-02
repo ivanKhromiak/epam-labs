@@ -3,15 +3,20 @@
     using System;
     using System.Collections.Generic;
     using Epam.HomeWork.Common;
+    using Epam.HomeWork.Common.IO;
     using Epam.HomeWork.Lab1.Task1;
     using Epam.HomeWork.Lab1.Task2;
+    using Epam.HomeWork.LabRunners.Common;
 
-    public class Lab1Runner : IConsoleLabRunner
+    public class Lab1Runner : ILabRunner
     {
         public Lab1Runner()
         {
-            Success = false;
-            Errors = new List<string>();
+            this.Success = false;
+            this.Errors = new List<string>();
+
+            this.Writer = new ConsoleWriter();
+            this.Reader = new ConsoleReader();
         }
 
         public bool Success { get; private set; }
@@ -21,100 +26,135 @@
         public string Description
             => "Lab 1: Strcuts and Enums";
 
-        public void RunConsoleLab()
-        {
-            Success = true;
-            RunTask1();
-            RunTask2();
+        public IWriter Writer { get; set; }
 
-            Console.WriteLine("Press any key to continue...");
-            Console.ReadKey();
+        public IReader Reader { get; set; }
+
+        public void Run()
+        {
+            this.Success = true;
+            this.RunStructTask();
+            this.RunEnumTask();
+
+            this.Writer.WriteLine("\t\nPress any key to continue...");
+            this.Reader.ReadKey();
         }
 
-        private void RunTask1()
+        private void RunStructTask()
         {
-            ConsoleHelper.WriteHeaderMessage("Task 1: Structs...\n", ConsoleColor.Yellow, ConsoleColor.Black);
-            RunPersonTask();
-            RunRectangleTask();
+            ConsoleWriterHelper
+                 .WriteHeaderMessage("Task 1: Structs:\n", this.Writer);
+
+            try
+            {
+                this.RunPersonTask();
+                this.RunRectangleTask();
+            }
+            catch (FormatException e)
+            {
+                this.Errors.Add($"{e.TargetSite.Name}: {e.Message}");
+                this.Success = false;
+            }
+            catch (OverflowException e)
+            {
+                this.Errors.Add($"{e.TargetSite.Name}: {e.Message}");
+                this.Success = false;
+            }
+            catch (Exception e)
+            {
+                this.Success = false;
+                throw e;
+            }
         }
 
-        private void RunTask2()
+        private void RunEnumTask()
         {
-            ConsoleHelper.WriteHeaderMessage("Task 2: Enums...\n", ConsoleColor.Yellow, ConsoleColor.Black);
-            RunMonthsTask();
-            RunColorsTask();
-            RunLongRangesTask();
+            this.Success = true;
+
+            ConsoleWriterHelper
+                    .WriteHeaderMessage("Task 2: Enums:\n", this.Writer);
+
+            try
+            {
+                this.RunMonthsTask();
+                this.RunColorsTask();
+                this.RunLongRangesTask();
+            }
+            catch (FormatException e)
+            {
+                this.Errors.Add($"{e.TargetSite.Name}: {e.Message}");
+                this.Success = false;
+            }
+            catch (OverflowException e)
+            {
+                this.Errors.Add($"{e.TargetSite.Name}: {e.Message}");
+                this.Success = false;
+            }
+            catch (Exception e)
+            {
+                this.Success = false;
+                throw e;
+            }
         }
 
         #region Task 1 helper methods
 
         private void RunPersonTask()
         {
-            ConsoleHelper.WriteHeaderMessage("\tPerson task...\n", ConsoleColor.Red, Console.BackgroundColor);
+            ConsoleWriterHelper
+                 .WriteHeaderMessage("\tPerson task:\n", this.Writer);
 
-            try
-            {
-                var person = ReadPersonFromConsole();
+            Person person = this.ReadPersonFromConsole();
 
-                Console.Write("\tEnter age value: ");
-                int ageValue = Convert.ToInt32(Console.ReadLine());
+            this.Writer.Write("\tEnter age value: ");
 
-                Console.WriteLine($"\t{person.OlderThan(ageValue)}\n");
-            }
-            catch (Exception e)
-            {
-                Errors.Add($"RunPersonTask() error: {e.Message}");
-                Success = false;
-            }
+            int ageValue = Convert.ToInt32(this.Reader.ReadLine());
+
+            this.Writer.WriteLine($"\t{person.OlderThan(ageValue)}\n");
+
         }
 
         private void RunRectangleTask()
         {
-            ConsoleHelper.WriteHeaderMessage("\tRectangle task...\n", ConsoleColor.Red, Console.BackgroundColor);
+            ConsoleWriterHelper
+                    .WriteHeaderMessage("\tRectangle task:\n", this.Writer);
 
-            try
+            double width, height, x, y;
+
+            this.Writer.Write("\tEnter rectangle width: ");
+            width = Convert.ToDouble(this.Reader.ReadLine());
+
+            this.Writer.Write("\tEnter rectangle height: ");
+            height = Convert.ToDouble(this.Reader.ReadLine());
+
+            this.Writer.Write("\tEnter rectangle x coord: ");
+            x = Convert.ToDouble(this.Reader.ReadLine());
+
+            this.Writer.Write("\tEnter rectangle y coord: ");
+            y = Convert.ToDouble(this.Reader.ReadLine());
+
+            var rect = new Rectangle
             {
-                double width, height, x, y;
+                Height = height,
+                Width = width,
+                X = x,
+                Y = y
+            };
 
-                Console.Write("\tEnter rectangle width: ");
-                width = Convert.ToDouble(Console.ReadLine());
+            this.Writer.WriteLine($"\tRectangle: {rect}\n");
 
-                Console.Write("\tEnter rectangle height: ");
-                height = Convert.ToDouble(Console.ReadLine());
-
-                Console.Write("\tEnter rectangle x coord: ");
-                x = Convert.ToDouble(Console.ReadLine());
-
-                Console.Write("\tEnter rectangle y coord: ");
-                y = Convert.ToDouble(Console.ReadLine());
-
-                var rect = new Rectangle
-                {
-                    Height = height,
-                    Width = width,
-                    X = x,
-                    Y = y
-                };
-
-                Console.WriteLine($"\tRectangle: {rect}\n");
-            }
-            catch (Exception e)
-            {
-                Errors.Add($"RunRectangleTask() error: {e.Message}");
-                Success = false;
-            }
         }
 
-        private static Person ReadPersonFromConsole()
+        private Person ReadPersonFromConsole()
         {
-            Console.Write("\tEnter name: ");
-            string name = Console.ReadLine();
+            this.Writer.Write("\tEnter name: ");
+            string name = this.Reader.ReadLine();
 
-            Console.Write("\tEnter surname: ");
-            string surname = Console.ReadLine();
+            this.Writer.Write("\tEnter surname: ");
+            string surname = this.Reader.ReadLine();
 
-            Console.Write("\tEnter age: ");
-            int age = Convert.ToInt32(Console.ReadLine());
+            this.Writer.Write("\tEnter age: ");
+            int age = Convert.ToInt32(this.Reader.ReadLine());
 
             return new Person
             {
@@ -130,41 +170,40 @@
 
         private void RunMonthsTask()
         {
-            ConsoleHelper.WriteHeaderMessage("\tMonth enum task...\n", ConsoleColor.Red, Console.BackgroundColor);
-            try
-            {
-                Console.Write("\tEnter month number: ");
-                int n = Convert.ToInt32(Console.ReadLine());
+            ConsoleWriterHelper
+                       .WriteHeaderMessage("\tMonth enum task:\n", this.Writer);
 
-                Console.WriteLine($"\tMonth: {Month.GetMonth(n)}\n");
-            }
-            catch (Exception e)
-            {
-                Errors.Add($"RunMonthsTask() error: {e.Message}");
-                Success = false;
-            }
+            this.Writer.Write("\tEnter month number: ");
+            int n = Convert.ToInt32(this.Reader.ReadLine());
+
+            this.Writer.WriteLine($"\tMonth: {Month.GetMonth(n)}\n");
+
         }
 
         private void RunColorsTask()
         {
-            ConsoleHelper.WriteHeaderMessage("\tColors enum task...\n", ConsoleColor.Red, Console.BackgroundColor);
+            ConsoleWriterHelper
+                       .WriteHeaderMessage("\tColors enum task:\n", this.Writer);
+
             Colors red = Colors.Red;
 
             var allColorsStrings = red.GetAllColors();
 
-            Console.WriteLine("\tAll colors in Colors enum:");
+            this.Writer.WriteLine("\tAll colors in Colors enum:");
             foreach (var colorString in allColorsStrings)
             {
-                Console.WriteLine($"\t - {colorString}");
+                this.Writer.WriteLine($"\t - {colorString}");
             }
 
-            Console.WriteLine();
+            this.Writer.WriteLine(string.Empty);
         }
 
         private void RunLongRangesTask()
         {
-            ConsoleHelper.WriteHeaderMessage("\tLonge range task...\n", ConsoleColor.Red, Console.BackgroundColor);
-            Console.WriteLine($"\tLong ranges: min={(long)LongRange.Min}, max={(long)LongRange.Max}");
+            ConsoleWriterHelper
+                       .WriteHeaderMessage("\tLong range task:\n", this.Writer);
+
+            this.Writer.WriteLine($"\tLong ranges: min={(long)LongRange.Min}, max={(long)LongRange.Max}");
         }
 
         #endregion

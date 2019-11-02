@@ -8,12 +8,18 @@ namespace Epam.HomeWork.LabRunners.Common
     using System.Collections.Generic;
     using System.Linq;
     using Epam.HomeWork.Common;
+    using Epam.HomeWork.Common.IO;
 
     /// <summary>
     /// Used to write files stats into console
     /// </summary>
     public class FilesStatisticsConsoleWriter : IStatisticWriter<string>
     {
+        /// <summary>
+        /// Console writer
+        /// </summary>
+        private readonly ConsoleWriter writer = new ConsoleWriter();
+
         /// <summary>
         /// Writes statistics into console
         /// </summary>
@@ -23,10 +29,10 @@ namespace Epam.HomeWork.LabRunners.Common
         {
             foreach (var stat in statistics)
             {
-                ConsoleHelper.WriteHeaderMessage(
-                $"{stat.Name}, count: {stat.Data.Count()}",
-                ConsoleColor.Magenta,
-                ConsoleColor.Black);
+                ConsoleWriterHelper.WriteHeaderMessage($"{stat.Name}, count: {stat.Data.Count()}", 
+                    writer, 
+                    ConsoleColor.Magenta, 
+                    ConsoleColor.Black);
              
                 foreach (var item in stat.Data)
                 {

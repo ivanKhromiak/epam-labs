@@ -3,15 +3,20 @@
     using System;
     using System.Collections.Generic;
     using Epam.HomeWork.Common;
+    using Epam.HomeWork.Common.IO;
     using Epam.HomeWork.Lab6.Common;
     using Epam.HomeWork.Lab6.Task1;
+    using Epam.HomeWork.LabRunners.Common;
 
-    public class Lab6Runner : IConsoleLabRunner
+    public class Lab6Runner : ILabRunner
     {
         public Lab6Runner()
         {
-            Success = false;
-            Errors = new List<string>();
+            this.Success = false;
+            this.Errors = new List<string>();
+
+            this.Writer = new ConsoleWriter();
+            this.Reader = new ConsoleReader();
         }
 
         public bool Success { get; private set; }
@@ -21,16 +26,21 @@
         public string Description
             => "Lab 6: Style cop";
 
-        public void RunConsoleLab()
+        public IWriter Writer { get; set; }
+
+        public IReader Reader { get; set; }
+
+        public void Run()
         {
-            Success = true;
+            this.Success = true;
 
-            ConsoleHelper.WriteHeaderMessage("Task 1: Rectangles intersection...\n", ConsoleColor.Yellow, ConsoleColor.Black);
+            ConsoleWriterHelper
+                .WriteHeaderMessage("Task 1: Rectangles intersection...\n", this.Writer);
 
-            RunRectangleTask();
+            this.RunRectangleTask();
 
-            Console.WriteLine("Press any key to continue...");
-            Console.ReadKey();
+            this.Writer.WriteLine("\t\nPress any key to continue...");
+            this.Reader.ReadKey();
         }
 
         private void RunRectangleTask()
@@ -40,20 +50,20 @@
             var firstRect = new Rectangle(FirstLength, FirstLength, PointF.Origin);
             var secondRect = new Rectangle(FirstLength / 2, FirstLength / 2, PointF.Origin);
 
-            PrintRect(firstRect, "First Rectangle");
-            PrintRect(secondRect, "Second Rectangle");
+            this.PrintRect(firstRect, "First Rectangle");
+            this.PrintRect(secondRect, "Second Rectangle");
 
-            PrintRect(firstRect.Intersect(secondRect), "Intersection");
+            this.PrintRect(firstRect.Intersect(secondRect), "Intersection");
         }
 
-        private static void PrintRect(Rectangle rect, string name)
+        private void PrintRect(Rectangle rect, string name)
         {
             if (rect == null)
             {
                 throw new ArgumentNullException(nameof(rect));
             }
 
-            Console.WriteLine($"\t{name}: Bottom Left: {rect.BottomLeft}," +
+            this.Writer.WriteLine($"\t{name}: Bottom Left: {rect.BottomLeft}," +
                 $" width: {rect.Width}, height: {rect.Height}");
         }
     }
