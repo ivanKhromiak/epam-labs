@@ -7,24 +7,24 @@
     {
         public FileTarget(string path)
         {
-            Path = path;
+            this.Path = path;
         }
 
         public string Path { get; }
 
         public bool Equals(FileTarget other)
         {
-            return Path.Equals(other.Path);
+            return this.Path.Equals(other.Path);
         }
 
         public override bool Equals(object obj)
         {
-            return obj is FileTarget target && Equals(target);
+            return obj is FileTarget target && this.Equals(target);
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(Path);
+            return HashCode.Combine(this.Path);
         }
 
         public override ITargetWriter GetTargetWriter()
@@ -33,7 +33,7 @@
 
             try
             {
-                loggingStream = File.Open(Path, FileMode.Append);
+                loggingStream = File.Open(this.Path, FileMode.Append);
             }
             catch (IOException e)
             {

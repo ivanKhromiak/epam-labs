@@ -11,25 +11,25 @@
 
         internal FileWriter(FileStream loggingStream)
         {
-            _loggingStream = loggingStream
+            this._loggingStream = loggingStream
                 ?? throw new ArgumentNullException("loggingStream", "FileWriter() null FileStream ref!");
         }
 
         public void WriteMessage(string message)
         {
-            _loggingStream.Write(new UTF8Encoding(true).GetBytes(message));
-            _loggingStream.Flush();
+            this._loggingStream.Write(new UTF8Encoding(true).GetBytes(message));
+            this._loggingStream.Flush();
         }
 
         public async Task WriteMessageAsync(string message)
         {
-            await _loggingStream.WriteAsync(new UTF8Encoding(true).GetBytes(message));
-            await _loggingStream.FlushAsync();
+            await this._loggingStream.WriteAsync(new UTF8Encoding(true).GetBytes(message));
+            await this._loggingStream.FlushAsync();
         }
 
         public void Flush()
         {
-            _loggingStream.Flush();
+            this._loggingStream.Flush();
         }
 
         #region IDisposable
@@ -37,20 +37,20 @@
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposedValue)
+            if (!this.disposedValue)
             {
                 if (disposing)
                 {
-                    _loggingStream.Flush();
-                    _loggingStream.Dispose();
+                    this._loggingStream.Flush();
+                    this._loggingStream.Dispose();
                 }
-                disposedValue = true;
+                this.disposedValue = true;
             }
         }
 
         public void Dispose()
         {
-            Dispose(true);
+            this.Dispose(true);
         }
         #endregion
     }

@@ -62,7 +62,7 @@ namespace CustomLogger
                 this.loggingConfiguration = value
                     ?? throw new ArgumentNullException(nameof(value));
 
-                this.ReconfigLoggers(LoggingConfiguration);
+                this.ReconfigLoggers(this.LoggingConfiguration);
             }
         }
 
@@ -87,7 +87,7 @@ namespace CustomLogger
 
                 if (logger == null)
                 {
-                    logger = new Logger(name, this, LoggingConfiguration);
+                    logger = new Logger(name, this, this.LoggingConfiguration);
                     this.loggerCache.InsertOrUpdate(cacheKey, logger);
                 }
             }
@@ -125,7 +125,7 @@ namespace CustomLogger
         /// </summary>
         private void LoggingConfigChanged()
         {
-            this.ReconfigLoggers(LoggingConfiguration);
+            this.ReconfigLoggers(this.LoggingConfiguration);
         }
 
         /// <summary>
@@ -182,7 +182,7 @@ namespace CustomLogger
             {
                 return obj is LoggerCacheKey key &&
                        this.Name == key.Name &&
-                       EqualityComparer<Type>.Default.Equals(Type, key.Type);
+                       EqualityComparer<Type>.Default.Equals(this.Type, key.Type);
             }
 
             /// <summary>

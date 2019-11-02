@@ -29,16 +29,16 @@ namespace Epam.HomeWork.Lab1.Task1
             }
 
             string ageString;
-            if (Age == age)
+            if (this.Age == age)
             {
                 ageString = "same as";
             }
             else
             {
-                ageString = Age >= age ? "older than" : "younger than";
+                ageString = this.Age >= age ? "older than" : "younger than";
             }
 
-            return $"{Name} {Surname} {ageString} {age}";
+            return $"{this.Name} {this.Surname} {ageString} {age}";
         }
     } 
 }

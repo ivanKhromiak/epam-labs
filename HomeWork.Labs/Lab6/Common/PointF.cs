@@ -59,12 +59,12 @@ namespace Epam.HomeWork.Lab6.Common
         /// <returns><see cref="PointF" /></returns>
         public object Clone()
         {
-            return MemberwiseClone();
+            return this.MemberwiseClone();
         }
 
         public override string ToString()
         {
-            return $"({X}; {Y})";
+            return $"({this.X}; {this.Y})";
         }
     }
 }

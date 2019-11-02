@@ -9,20 +9,20 @@
 
         public double Width
         {
-            get => _width;
+            get => this._width;
             set
             {
-                _width = value > 0 ? value 
+                this._width = value > 0 ? value 
                     : throw new ArgumentException("Width cannot be negative");
             }
         }
 
         public double Height
         {
-            get => _height;
+            get => this._height;
             set
             {
-                _height = value > 0 ? value
+                this._height = value > 0 ? value
                     : throw new ArgumentException("Height cannot be negative");
             }
         }
@@ -31,11 +31,11 @@
         public double Y { get; set; }
 
         public double Perimetr
-            => 2 * (Width + Height);
+            => 2 * (this.Width + this.Height);
 
         public override string ToString()
         {
-            return $"Height={Height}, Width={Width}, Perimeter={Perimetr}, X={X}, Y={Y}";
+            return $"Height={this.Height}, Width={this.Width}, Perimeter={this.Perimetr}, X={this.X}, Y={this.Y}";
         }
     }
 }
