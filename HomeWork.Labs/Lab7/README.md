@@ -7,8 +7,8 @@ This project is a part of homework for Epam .NET Lab #10
 - Project type: Class Library (.NET Core)
 
 - Contains classes which helps to solves task
-  1. [DirectoryComparer](Lab7/DirectoryComparer.cs) - to compare directories (uses [EnumerableComparer](Lab7/EnumerableComparer.cs))
-  2. [EnumerableComparer](Lab7/EnumerableComparer.cs) - to compare collections
+  1. [DirectoryComparer](DirectoryComparer.cs) - to compare directories (uses [EnumerableComparer](EnumerableComparer.cs))
+  2. [EnumerableComparer](EnumerableComparer.cs) - to compare collections
 
 Excel Input/Ouptut implemented in the corresponding Lab Runner
 
