@@ -9,10 +9,12 @@
     public class Container : IContainer
     {
         private readonly ConcurrentDictionary<Type, ServiceDescriptor> servicesMap;
+        private readonly ConcurrentDictionary<Type, object> genericServicesMap;
 
         public Container()
         {
             this.servicesMap = new ConcurrentDictionary<Type, ServiceDescriptor>();
+            this.genericServicesMap = new ConcurrentDictionary<Type, object>();
         }
 
         public IContainerBuilder For<TSource>()
@@ -56,15 +58,25 @@
 
         private object CreateGenericInstance(Type sourceType)
         {
+            object instance = null;
             var destTypeDesc = servicesMap[sourceType.GetGenericTypeDefinition()];
             var closedDestType = destTypeDesc.ServiceType.MakeGenericType(sourceType.GetGenericArguments());
 
-            if (destTypeDesc.ServiceImplementation == null)
+            if (destTypeDesc.ServiceLifeTime == LifeTime.Transient)
             {
-                destTypeDesc.ServiceImplementation = CreateInstance(closedDestType);
+                instance = CreateInstance(closedDestType);
+            }
+            else if (destTypeDesc.ServiceLifeTime == LifeTime.Singleton)
+            {
+                if (!genericServicesMap.ContainsKey(closedDestType))
+                {
+                    genericServicesMap.TryAdd(closedDestType, CreateInstance(closedDestType));
+                }
+
+                instance = genericServicesMap[closedDestType];
             }
 
-            return destTypeDesc.ServiceImplementation;
+            return instance;
         }
 
         private object CreateInstance(ServiceDescriptor serviceDescriptor)
