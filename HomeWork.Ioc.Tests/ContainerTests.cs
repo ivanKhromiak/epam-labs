@@ -38,21 +38,25 @@ namespace HomeWork.Ioc.Tests
         public void ResolvesConstructorDependencies()
         {
             var repository = container.Resolve<ICrudRepository<Employee>>();
+            var employeeRepository = repository as CrudRepository<Employee>;
 
             Assert.AreEqual(typeof(CrudRepository<Employee>), repository.GetType());
-
-            repository = repository as CrudRepository<Employee>;
-
-            Assert.AreEqual(typeof(Logger), repository.Logger.GetType());
+            Assert.AreEqual(typeof(Logger), employeeRepository.Logger.GetType());
         }
 
         [Test]
-        public void ResolvesSingletonUnboundGenericDependencies()
+        public void ResolvesSingletonUnboundGenericDependencies() 
         {
-            var firstRepository = container.Resolve<ICrudRepository<Employee>>();
-            var secondRepository = container.Resolve<ICrudRepository<Employee>>();
+            var employeeRepo = container.Resolve<ICrudRepository<Employee>>();
+            var customerRepo = container.Resolve<ICrudRepository<Customer>>();
 
-            Assert.IsTrue(ReferenceEquals(firstRepository, secondRepository));
+            var secondEmployeeRepo = container.Resolve<ICrudRepository<Employee>>();
+            var secondCustomerRepo = container.Resolve<ICrudRepository<Customer>>();
+
+            Assert.AreEqual(typeof(CrudRepository<Employee>), employeeRepo.GetType());
+            Assert.AreEqual(typeof(CrudRepository<Customer>), customerRepo.GetType());
+            Assert.IsTrue(ReferenceEquals(employeeRepo, secondEmployeeRepo));
+            Assert.IsTrue(ReferenceEquals(customerRepo, secondCustomerRepo));
         }
     }
 }
