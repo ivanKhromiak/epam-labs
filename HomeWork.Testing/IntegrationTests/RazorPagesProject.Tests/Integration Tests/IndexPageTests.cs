@@ -48,6 +48,51 @@ namespace RazorPagesProject.Tests.Integration_Tests
             Assert.Equal("/", response.Headers.Location.OriginalString);
         }
 
+
+        [Fact]
+        public async Task Post_AddMessageHandler_ReturnsRedirectToRoot()
+        {
+            // Arrange
+            var defaultPage = await _client.GetAsync("/");
+            var content = await HtmlHelpers.GetDocumentAsync(defaultPage);
+
+            //Act
+            var response = await _client.SendAsync(
+                (IHtmlFormElement)content.QuerySelector("form[id='addMessage']"),
+                (IHtmlButtonElement)content.QuerySelector("button[id='addMessageBtn']"),
+                new Dictionary<string, string>
+                {
+                    ["Message.Text"] = string.Empty
+                });
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, defaultPage.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Null(defaultPage.Headers.Location);
+        }
+
+        [Fact]
+        public async Task Post_AddMessageHandler_HandlesInputOverFlow()
+        {
+            // Arrange 
+            var defaultPage = await _client.GetAsync("/");
+            var content = await HtmlHelpers.GetDocumentAsync(defaultPage);
+
+            //Act
+            var response = await _client.SendAsync(
+                (IHtmlFormElement)content.QuerySelector("form[id='addMessage']"),
+                (IHtmlButtonElement)content.QuerySelector("button[id='addMessageBtn']"),
+                new Dictionary<string, string>
+                {
+                    ["Message.Text"] = new string(' ', OverFlowMessageLength)
+                });
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, defaultPage.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Null(defaultPage.Headers.Location);
+        }
+
         [Fact]
         public async Task Post_AnalyzeMessageHandler_ReturnsRedirectToRoot()
         {
